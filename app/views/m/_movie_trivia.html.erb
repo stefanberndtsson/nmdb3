@@ -1,0 +1,7 @@
+<% for trivia in @movie.trivia %>
+<ul class="pageitem">
+  <li class="textbox">
+    <%= decode_links(trivia.trivia, :mobile) %>
+  </li>
+</ul>
+<% end %>

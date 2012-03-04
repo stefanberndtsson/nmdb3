@@ -1,0 +1,27 @@
+<ul class="pageitem">
+<% last_season = nil %>
+<% for episode in @movie.episodes_sorted %>
+  <% if @has_seasons && last_season != episode.episode_season %>
+    <% if last_season %>
+      </ul>
+      <ul class="pageitem">
+    <% end %>
+    <li class="textbox"><span class="header">Season <%= episode.episode_season %></span></li>
+    <% last_season = episode.episode_season %>
+  <% end %>
+<li class="menu">
+  <a href="<%= url_for(:action => :movie, :id => episode.id) %>">
+   <span class="name">
+    <% if episode.episode_episode %>
+     <%= episode.episode_episode %>.&nbsp;
+    <% end %>
+    <%= episode.episode_display(true) %>
+   </span>
+  <% if episode.first_release_date %>
+  <span class="comment"><%= episode.first_release_date.release_date %></span>
+  <% end %>
+  <span class="arrow"></span>
+  </a>
+</li>
+<% end %>
+</ul>

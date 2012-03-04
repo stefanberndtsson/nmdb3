@@ -1,0 +1,21 @@
+<% content_for :title do -%>
+<% if params[:action] == "result" -%>
+[N] Search results
+<% else -%>
+Search
+<% end -%>
+<% end -%>
+<% content_for :page_head do -%>
+<% if params[:action] == "result" -%>
+Search results: <%= @query %>
+<% else -%>
+Search
+<% end -%>
+<% end -%>
+<% content_for :stylesheet do -%>
+<%= stylesheet_link_tag "search" %>
+<%= stylesheet_link_tag "common" %>
+<%= stylesheet_link_tag "jquery.ui.all" %>
+<%= javascript_include_tag "jquery-ui-1.8.12.custom.min.js" %>
+<%= javascript_include_tag "search.js" %>
+<% end -%>

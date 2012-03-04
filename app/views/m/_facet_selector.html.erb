@@ -1,0 +1,34 @@
+<ul class="pageitem">
+  <li class="select">
+    <input type="hidden" id="search_facet_selector" name="search_facet_selector" value="false"/>
+    <select id="facet_select" name="facet_type" current_page="summary" data-source="<%= @source %>">
+      <% if @filters.size > 0 %>
+      <option value="summary" selected="selected">Filter (<%= @filters.size %> active)</option>
+      <% else %>
+      <option value="summary" selected="selected">Filter</option>
+      <% end %>
+      <option value="reset_facets">Reset Filters</option>
+      <% for facet_type in @facet_types %>
+      <% if((params["facet_#{facet_type}"] && params["facet_#{facet_type}"].keys.size > 0) ||
+            (facet_type == "category" && 
+	       ((params["facet_category"] && params["facet_category"].keys.size > 0) ||
+	        (params["facet_episode"] && params["facet_episode"].keys.size > 0))))
+       %>
+      <% active_count = 0
+         if facet_type == "category" && params["facet_category"]
+            active_count = params["facet_#{facet_type}"].keys.size
+         elsif params["facet_#{facet_type}"]
+            active_count = params["facet_#{facet_type}"].keys.size
+	 end
+       %>
+      <% active_count += 1 if facet_type == "category" && params["facet_episode"] && params["facet_episode"].keys.size > 0 %>
+      <% active_string = @facet_pages[facet_type] == "range" ? "active" : "#{active_count} active" %>
+      <option value="<%= facet_type %>"><%= @facet_names[facet_type] %> (<%= active_string %>)</option>
+      <% else %>
+      <option value="<%= facet_type %>"><%= @facet_names[facet_type] %></option>
+      <% end %>
+      <% end %>
+    </select>
+    <span class="arrow"></span>
+  </li>
+</ul>

@@ -1,0 +1,7 @@
+<%= render :partial => 'head' %>
+<h2>Taglines</h2>
+<% for tagline in @movie.taglines -%>
+<ul>
+<li><%= tagline.tagline %></li>
+</ul>
+<% end -%>

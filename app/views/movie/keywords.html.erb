@@ -1,0 +1,7 @@
+<%= render :partial => 'head' %>
+<h2>Keywords</h2>
+<ul style="width: 50%;">
+<% for keyword in @keywords -%>
+<li><%= display_single_keyword(keyword, true) %></li>
+<% end -%>
+</ul>

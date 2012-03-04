@@ -1,0 +1,10 @@
+<ul class="pageitem">
+<% for keyword in @keywords %>
+  <li class="menu">
+    <a href="<%= url_for(:action => :result, :id => nil, :search => "@keyword #{keyword.keyword}", :source => "movies") %>">
+      <span class="keyword_name"><%= display_single_keyword(keyword, false) %></span>
+      <span class="arrow"></span>
+    </a>
+  </li>
+<% end %>
+</ul>

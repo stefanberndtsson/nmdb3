@@ -1,0 +1,23 @@
+<%= render :partial => 'head' %>
+<table width="100%">
+  <tr>
+    <td valign="top" width="25%">
+      <table class="by_table">
+        <% for keyword in @grouped.keys.sort_by { |x| -@grouped[x].size } -%>
+        <tr>
+          <td><%= link_to_page(keyword.display, :person, :movies_by_keyword, @person.id, 
+		  :anchor => "keyword_#{keyword.id}") %> (<%= @grouped[keyword].size %>)</td>
+        </tr>
+        <% end -%>
+      </table>
+    </td>
+    <td valign="top" width="75%">
+      <% for keyword in @grouped.keys.sort_by { |x| -@grouped[x].size } -%>
+      <div id="keyword_<%= keyword.id %>">
+	<%= render :partial => 'movies', :object => @grouped[keyword], 
+	:locals => {:heading => keyword.display} %>
+      </div>
+      <% end -%>
+    </td>
+  </tr>
+</table>

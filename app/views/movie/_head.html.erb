@@ -1,0 +1,63 @@
+<% content_for :title do -%>
+[N] <%= @movie.display %>
+<% end -%>
+<% content_for :page_head do -%>
+<% if current_user -%>
+<div class="user_toggle_settings">
+  <%= render :partial => 'toggle_button', :locals => { :title => "Error", :key => "error" } %>
+  <%= render :partial => 'toggle_button', :locals => { :title => "Unwishlist", :key => "unwish" } %>
+  <%= render :partial => 'toggle_button', :locals => { :title => "Wishlist", :key => "wish" } %>
+  <%= render :partial => 'toggle_button', :locals => { :title => "Own", :key => "owns" } %>
+  <%= render :partial => 'toggle_button', :locals => { :title => "Seen", :key => "seen" } %>
+</div>
+<% end -%>
+<span style="<%= header_offset %>">
+  <span class="movie_title_<%= @movie.id %>"><%= @movie.display %></span>
+</span>
+<% end -%>
+<% content_for :stylesheet do -%>
+<%= stylesheet_link_tag "movie" %>
+<%= stylesheet_link_tag "common" %>
+<% end -%>
+<% content_for :image do -%>
+<% if WikipediaFetcher.image(@movie) -%>
+<div id="movie_image"><%= image_tag WikipediaFetcher.image(@movie), :onerror => "image_loading_error(\"#{escape_javascript(link_to_resetexternal(@movie.id, "movie", true))}\");" %></div>
+<% else -%>
+<div id="movie_image"
+     class="ajax_wikipedia_image"
+     url="<%= url_for(:action => :image, :id => @movie.id) %>"
+     url_title="<%= url_for(:action => :new_title, :id => @movie.id) %>"
+     update="movie_image"
+     update_title="movie_title_<%= @movie.id %>"></div>
+<% end -%>
+<% end -%>
+
+<% if @movie.main -%>
+<h2>This is an episode of <%= link_to_movie(@movie.main) %></h2>
+
+<h3>
+  <% if @movie.prev_episode -%>
+  <%= link_to_movie(@movie.prev_episode, 
+                    "<< #{@movie.prev_episode.episode_name}",
+                    params[:action]) %> |
+  <% end -%>
+  <%= @movie.episode_name %>
+  <% if @movie.next_episode -%>
+  | <%= link_to_movie(@movie.next_episode, 
+                      "#{@movie.next_episode.episode_name} >>",
+	              params[:action]) %>
+  <% end -%>
+</h3>
+<% end -%>
+
+<% if !@movie.is_episode && (@movie.next_followed || @movie.prev_followed)-%>
+<h3>
+  <% if @movie.prev_followed -%>
+  <%= link_to_movie(@movie.prev_followed, "<< #{@movie.prev_followed.display}") %> |
+  <% end -%>
+  <span class="movie_title_<%= @movie.id %>"><%= @movie.display %></span>
+  <% if @movie.next_followed -%>
+  | <%= link_to_movie(@movie.next_followed, "#{@movie.next_followed.display} >>") %>
+  <% end -%>
+</h3>
+<% end -%>

@@ -1,0 +1,243 @@
+body {
+    min-height: 800px !important;
+}
+
+.image {
+    max-width: 60.75px;
+    max-height: 90px;
+    width: auto !important;
+}
+
+.store .name {
+    left: 80px !important;
+}
+
+.menu .name {
+    height: 21px;
+    margin-top: 2px !important;
+}
+
+.menu .comment {
+    color: #555 !important;
+    height: 19px;
+    float: left !important;
+    margin-top: 0px !important;
+    font-size: 14px !important;
+    clear: both;
+    margin-left: 11px !important;
+}
+
+.infosection .textbox {
+    min-height: 206px !important;
+}
+
+#titlename {
+    min-height: 0 !important;
+}
+
+.infosection .infoimage {
+    float: right;
+}
+
+.infosection .infoimage img {
+    margin-left: 9px;
+    max-height: 200px;
+    max-width: 140px;
+}
+
+.clear {
+    clear: both;
+}
+
+.header {
+    margin-bottom: 3px !important;
+    margin-top: 6px !important;
+}
+
+select {
+    text-align: center;
+    -moz-appearance: menuitem !important;
+}
+
+.textbox {
+    height: auto !important;
+}
+
+.multiline {
+    white-space: normal !important;
+    height: auto !important;
+}
+
+.topline_arrow {
+    top: 10px !important;
+}
+
+.textbox a {
+    height: auto !important;
+}
+
+.textbox a .name {
+    width: 100% !important;
+}
+
+.quote_quoter {
+    font-weight: bold;
+}
+
+.quote_comment {
+    font-style: italic;
+}
+
+#topbar {
+  position: fixed !important;
+  left: 0px;
+  right: 0px;
+  top: 0px;
+  z-index: 100;
+  height: 32px !important;
+  margin-bottom: 0px !important;
+}
+
+#title {
+  height: 32px !important;
+  margin-left: 48px;
+  margin-right: 32px;
+}
+
+#content {
+  top: 32px;
+  margin-top: 0px !important;
+}
+
+#footer {
+  top: 0px;
+  margin-bottom: 10px !important;
+}
+
+.tribox {
+    margin-top: 0px !important;
+    margin-bottom: 10px !important;
+    height: 32px !important;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f1f3f4), color-stop(3%, #e0e4e7), color-stop(50%, #c7cfd4), color-stop(51%, #bec7cd), color-stop(97%, #b4bec6), to(#8999a5));
+    margin: -13px 0 13px 0;
+    width: 100%;
+    background: -moz-linear-gradient(-90deg, #f1f3f4 0%, #e0e4e7 3%, #c7cfd4 50%, #bec7cd 51%, #b4bec6 97%, #8999a5 100%);
+}
+
+.duobox {
+    margin-top: 0px !important;
+    margin-bottom: 10px !important;
+    height: 32px !important;
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f1f3f4), color-stop(3%, #e0e4e7), color-stop(50%, #c7cfd4), color-stop(51%, #bec7cd), color-stop(97%, #b4bec6), to(#8999a5));
+    margin: -13px 0 13px 0;
+    width: 100%;
+    background: -moz-linear-gradient(-90deg, #f1f3f4 0%, #e0e4e7 3%, #c7cfd4 50%, #bec7cd 51%, #b4bec6 97%, #8999a5 100%);
+}
+
+.tribox,.duobox .separator,.title,.left,.right {
+    line-height: 32px;
+    height: 32px;
+    font-size: 13pt;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.tribox .title {
+    position: absolute;
+    left: 33%;
+    right: 67%;
+    margin-left: 9px;
+    margin-right: 9px;
+    text-align: center;
+    width: 33%;
+}
+
+.tribox .left {
+    position: absolute;
+    left: 9px;
+    width: 33%;
+    text-align: left;
+}
+
+.tribox .right {
+    position: absolute;
+    right: 9px;
+    width: 33%;
+    text-align: right;
+}
+
+.duobox .separator {
+    position: absolute;
+    left: 45%;
+    right: 55%;
+    margin-left: 9px;
+    margin-right: 9px;
+    text-align: center;
+    width: 10%;
+}
+
+.duobox .left {
+    position: absolute;
+    left: 9px;
+    width: 45%;
+    text-align: left;
+}
+
+.duobox .right {
+    position: absolute;
+    right: 9px;
+    width: 45%;
+    text-align: right;
+}
+
+li.filter {
+    border-top: 1px solid #878787;
+    display: block;
+    height: 43px;
+    list-style-type: none;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    text-align: center;
+}
+
+.filter .name {
+    display: block;
+    font-size: 17px;
+    font-weight: bold;
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: auto;
+    line-height: 21px;
+    text-align: center;
+    margin-top: 11px;
+}
+
+.store .starcomment {
+    left: 95px !important;
+    max-width: 70% !important;
+    max-height: 2.5em !important;
+    overflow: hidden;
+}
+
+.store .nowrap {
+    white-space: nowrap;
+}
+
+.menu .keyword_name {
+    display: block;
+    font-size: 17px;
+    height: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: auto;
+    line-height: 21px;
+    margin-top: 11px;
+    color: black;
+    margin-left: 7px;
+}

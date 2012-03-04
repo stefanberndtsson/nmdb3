@@ -1,0 +1,35 @@
+<%= form_for(:search, :url => { :action => :result, :source => source }, :html => {:id => "search_#{source}"} ) do |f| %>
+  <ul class="pageitem">
+    <% if defined?(prefill) && !prefill.blank? %>
+    <li class="textbox"><span class="header">Search <%= source.titleize %></span></li>
+    <% else %>
+    <% prefill = nil %>
+    <% end %>
+    <li class="bigfield"><%= search_field_tag :search, prefill, :placeholder => "Search #{source.titleize}" %></li>
+  </ul>
+<% if @with_facets %>
+  <% if @show_facet_page %>
+  <ul class="pageitem">
+  <li class="button">
+  <%= submit_tag "Select" %>
+  </li>
+  </ul>
+  <%= render :partial => "facet_#{@facet_page_to_render}" %>
+  <% else %>
+  <%= render :partial => 'facet_selector', :locals => {:source => source } %>
+  <% end %>
+  <% for facet_type in @facet_types %>
+  <% next if facet_type == @facet_type %>
+  <% if params["facet_#{facet_type}"] %>
+  <% for set_facet in params["facet_#{facet_type}"].keys %>
+  <%= hidden_field_tag "facet_#{facet_type}[#{set_facet}]", params["facet_#{facet_type}"][set_facet] %>
+  <% end %>
+  <% end %>
+  <% if facet_type == "category" && params["facet_episode"] %>
+  <% for set_facet in params["facet_episode"].keys %>
+  <%= hidden_field_tag "facet_episode[#{set_facet}]", params["facet_episode"][set_facet] %>
+  <% end %>
+  <% end %>
+  <% end %>
+<% end %>
+<% end %>

@@ -1,0 +1,7 @@
+<%= render :partial => 'head' %>
+<h2>Trivia</h2>
+<% for trivia in @movie.trivia -%>
+<ul>
+  <li><%= decode_links(trivia.trivia) %></li>
+</ul>
+<% end -%>

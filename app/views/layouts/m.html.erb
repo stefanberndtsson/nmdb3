@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<% @timer ||= { } -%>
+<% @timer[:view] = Time.now -%>
+<html>
+  <head>
+    <meta content="yes" name="apple-mobile-web-app-capable" />
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+    <meta content="minimum-scale=1.0, width=device-width, maximum-scale=0.6667, user-scalable=no" name="viewport" />
+    <title><%= yield :title %></title>
+    <%= stylesheet_link_tag "mobile" %>
+    <%= stylesheet_link_tag "developer-style" %>
+    <%= stylesheet_link_tag "mozillaStyle" %>
+    <%= javascript_include_tag "jquery", "rails", "mobile", "developer-functions", "application" %>
+    <%= yield :stylesheet %>
+  </head>
+  <body>
+    <div id="topbar">
+      <div id="title"><%= yield :page_head %></div>
+      <% if !@hide_left_link %>
+        <div id="leftbutton"><%= link_to "Search", :action => :index, :id => nil %></div>
+      <% end %>
+      <div id="rightbutton"><a href="#">Top</a></div>
+    </div>
+    <div id="content">
+      <%= yield %>
+    </div>
+    <div id="footer">
+    <div id="rtime">
+      <% @timer[:end] = Time.now -%>
+      <div id="total_time">
+	<b>Total time:</b> <%= display_total_time(@timer) %>
+      </div>
+    </div>
+    </div>
+  </body>
+</html>

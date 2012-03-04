@@ -1,0 +1,51 @@
+<ul class="pageitem">
+  <% if params["facet_#{@facet_type}"] || (@facet_type == "category" && params["facet_episode"]) %>
+  <li class="textbox"><span class="header center">Active filters</span></li>
+  <li class="button">
+    <%= submit_tag "Reset all active" %>
+    <%= hidden_field_tag "last_facet_selection", @facet_type %>
+  </li>
+  <% if params["facet_#{@facet_type}"] %>
+  <% for item in params["facet_#{@facet_type}"].keys %>
+  <li class="checkbox">
+    <span class="name"><%= params["facet_#{@facet_type}"][item] == "include" ? "Require" : "Exclude" %> <%= facet_presentation(@facet_type, item.to_i, true) %></span>
+    <%= check_box_tag "active_facet_#{@facet_type}[#{item}]", params["facet_#{@facet_type}"][item], :selected => true %>
+  </li>
+  <% end %>
+  <% end %>
+  <% if @facet_type == "category" && params["facet_episode"] && params["facet_episode"]["0"] %>
+  <li class="checkbox">
+    <span class="name"><%= params["facet_episode"]["0"] == "include" ? "Only" : "Exclude" %> Episodes</span>
+    <%= check_box_tag "active_facet_episode[0]", params["facet_episode"]["0"], :selected => true %>
+  </li>
+  <% end %>
+  <% end %>
+</ul>
+
+<ul class="pageitem">
+  <li class="textbox"><span class="header">Add filters</span></li>
+  <% for item in @facet_list %>
+  <% item_count = item.last.to_s %>
+  <% if @partial_facets %>
+  <%   item_count = "ca. #{ca_count(@results[:movies_count],item.last)}" %>
+  <% end %>
+  <li class="select">
+    <select name="facet_<%= @facet_type %>[<%= @facet_type == "category" ? item.first : item.first.id %>]">
+      <option value=""><%= facet_presentation(@facet_type, item.first) %> (<%= item_count %>)</option>
+      <option value="include">Require <%= facet_presentation(@facet_type, item.first) %> (<%= item_count %>)</option>
+      <option value="exclude">Exclude <%= facet_presentation(@facet_type, item.first) %> (<%= item_count %>)</option>
+    </select>
+    <span class="arrow"></span>
+  </li>
+  <% end %>
+  <% if @facet_type == "category" && params["facet_episode"].blank? %>
+  <li class="select">
+    <select name="facet_episode[0]">
+      <option value="">Episodes</option>
+      <option value="include">Only Episodes</option>
+      <option value="exclude">Exclude Episodes</option>
+    </select>
+    <span class="arrow"></span>
+  </li>
+  <% end %>
+</ul>

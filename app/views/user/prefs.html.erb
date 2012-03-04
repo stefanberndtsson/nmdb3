@@ -1,0 +1,32 @@
+<%= render :partial => 'head', :locals => { :title => "Preferences" } %>
+<%= form_for :user, :url => { :action => :save, :id => @user } do |f| %>
+<h3>User settings</h3>
+<label for="user_name">Display name</label><br/>
+<%= f.text_field :name %><br/>
+<label for="user_name">Username</label><br/>
+<%= f.text_field :username %><br/>
+<label for="user_name">Password</label><br/>
+<%= f.password_field :password, :value => "" %><br/>
+<label for="user_name">Confirm password</label><br/>
+<%= f.password_field :verify_password, :value => "" %><br/>
+<h3>Available toggle buttons</h3>
+<%= f.check_box :show_seen %>
+<label for="user_show_seen">Seen movies</label><br/>
+<%= f.check_box :show_owns %>
+<label for="user_show_owns">Owned movies</label><br/>
+<%= f.check_box :show_wish %>
+<label for="user_show_wish">Wishlist</label><br/>
+<%= f.check_box :show_unwish %>
+<label for="user_show_unwish">Unwishlist</label><br/>
+<%= f.check_box :show_error %>
+<label for="user_show_error">Errored movies</label><br/>
+
+<h3>Other visuals</h3>
+<%= f.check_box :show_scores %>
+<label for="user_show_scores">Show scores in search results</label><br/>
+<%= f.check_box :show_autocomplete %>
+<label for="user_show_autocomplete">User autocomplete in search</label><br/>
+<br/>
+<%= submit_tag "Save settings" %>
+<% end -%>
+

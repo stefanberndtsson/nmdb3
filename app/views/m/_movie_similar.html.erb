@@ -1,0 +1,11 @@
+<ul class="pageitem">
+  <% for movie in @movie.find_similar %>
+  <li class="menu">
+   <a href="<%= url_for(:action => :movie, :id => movie[0].id) %>">
+    <span class="name"><%= movie[0].display %></span>
+    <span class="comment"><%= movie[1] %><%= movie[0].rating ? " (Rating: #{movie[0].rating.rating})" : "" %></span>
+    <span class="arrow"></span>
+   </a>
+  </li>
+  <% end %>
+</ul>

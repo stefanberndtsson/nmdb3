@@ -1,0 +1,11 @@
+<h3><%= heading %></h3>
+<table class="movies">
+  <tr class="head">
+    <th></th>
+    <th>Movie</th>
+    <th>Character</th>
+  </tr>
+  <% movies.each_with_index do |row,i| -%>
+  <%= render :partial => 'movie_row', :object => row, :locals => { :cnt => i } %>
+  <% end -%>
+</table>

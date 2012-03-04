@@ -1,0 +1,9 @@
+<%= render :partial => 'head' %>
+<h2>Goofs</h2>
+<% for goof in @movie.goofs -%>
+<ul>
+<li><span class="goof_category"><%= t("goof."+goof.category) %>: </span>
+<%= decode_links(goof.goof) %>
+</li>
+</ul>
+<% end -%>

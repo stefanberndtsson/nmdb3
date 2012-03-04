@@ -1,0 +1,99 @@
+<% content_for :title do %>
+<%= @movie.display %>
+<% end %>
+<% content_for :page_head do %>
+<% if @movie.is_episode? %>
+<%= @movie.main.display %>
+<% else %>
+<%= @movie.display %>
+<% end %>
+<% end %>
+<% if @movie.is_episode? %>
+<div class="duobox">
+  <% if @movie.prev_episode %>
+  <div class="left"><%= link_to_movie(@movie.prev_episode, @movie.prev_episode.episode_name, nil, :mobile) %></div>
+  <% end %>
+  <div class="separator"></div>
+  <% if @movie.next_episode %>
+  <div class="right"><%= link_to_movie(@movie.next_episode, @movie.next_episode.episode_name, nil, :mobile) %></div>
+  <% end %>
+</div>
+<% elsif !@movie.is_episode? && (@movie.next_followed || @movie.prev_followed) %>
+<div class="duobox">
+  <% if @movie.prev_followed %>
+  <div class="left"><%= link_to_movie(@movie.prev_followed, @movie.prev_followed.display, nil, :mobile) %></div>
+  <% end %>
+  <div class="separator"></div>  
+  <% if @movie.next_followed %>
+  <div class="right"><%= link_to_movie(@movie.next_followed, @movie.next_followed.display, nil, :mobile) %></div>
+  <% end %>
+</div>
+<% else %>
+<div style="margin-bottom: 10px"></div>
+<% end %>
+<div class="infosection">
+<div class="infobox">
+<ul class="pageitem">
+  <% if @movie.is_episode? %>
+  <li class="textbox" id="titlename"><span class="header center"><%= @movie.episode_display %></span></li>
+  <% else %>
+  <li class="textbox" id="titlename"><span class="header center"><%= @movie.display %></span></li>
+  <% end %>
+  <li class="textbox">
+<% if WikipediaFetcher.image(@movie) -%>
+<a href="<%= url_for(:action => :image_view, :type => :movie, :object_id => @movie.id) %>">
+ <div id="infoimage" class="infoimage"><%= image_tag WikipediaFetcher.image(@movie), :onerror => "image_loading_error(\"#{escape_javascript(link_to_resetexternal(@movie.id, "movie", true))}\");" %></div>
+</a>
+<% else -%>
+<a href="<%= url_for(:action => :image_view, :type => :movie, :object_id => @movie.id) %>">
+<div id="infoimage"
+     class="infoimage ajax_wikipedia_image"
+     url="<%= url_for(:controller => :movie, :action => :image, :id => @movie.id) %>"
+     url_title="<%= url_for(:controller => :movie, :action => :new_title, :id => @movie.id) %>"
+     update="infoimage"
+     update_title="movie_title_<%= @movie.id %>"></div>
+<% end -%>
+</a>
+
+     <% if !@genres.blank? %>
+     <span class="header">Genre</span>
+     <p><%= @genres %></p>
+     <% end %>
+     <% if !@director.blank? %>
+     <span class="header">Director</span>
+     <p><%= link_to_person @director, false, :mobile %></p>
+     <% end %>
+     <% if @movie.rating %>
+     <span class="header">Rating</span>
+     <p><%= @movie.rating.rating %>/10 (<%= @movie.rating.votes %> votes)</p>
+     <% end %>
+     <% if !@tagline.blank? %>
+     <span class="header">Tagline</span>
+     <p><%= @tagline %></p>
+     <% end %>
+     <% if !@release.blank? %>
+     <span class="header">Release date</span>
+     <p><%= @release %></p>
+     <% end %>
+     <% if @movie.is_episode? %>
+     <span class="header"><%= @movie.episode_position_display %></span>
+     <p><%= link_to_movie(@movie.main, nil, nil, :mobile) %></p>
+     <% end %>
+  </li>
+</ul>
+</div>
+</div>
+<div class="clear"></div>
+<form id="page_selector">
+<ul class="pageitem">
+  <li class="select">
+    <select id="page_select" name="page" current_page="<%= @page %>">
+      <% for vpage in @valid %>
+        <option value="<%= vpage[0] %>"><%= vpage[1] %></option>
+      <% end %>
+    </select>
+    <span class="arrow"></span>
+  </li>
+</ul>
+</form>
+<%= render :partial => "movie_#{@page}" %>

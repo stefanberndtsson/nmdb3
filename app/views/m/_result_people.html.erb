@@ -1,0 +1,6 @@
+<ul class="pageitem">
+<li class="textbox"><span class="header"><%= pluralize((@results[:exact_person_count].to_i+@results[:people_count].to_i), "person", "persons") %> found</span></li> 
+<% for result in ((@results[:people] || [])+(@results[:exact_person] || [])).sort_by {|x| -x.score }[0..@max_results] %>
+<%= render :partial => 'result_person_item', :locals => { :result => result } %>
+<% end %>
+</ul>

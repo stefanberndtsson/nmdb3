@@ -1,0 +1,11 @@
+<%= render :partial => 'head' %>
+<h2>Soundtrack</h2>
+<% for title in @movie.soundtrack_titles.sort_by { |x| x.sort_order } -%>
+<ul>
+  <li><b><%= title.title %></b><br/>
+    <% for data in title.soundtrack_title_data.sort_by { |x| x.sort_order } -%>
+    <%= decode_links(data.value) %><br/>
+    <% end -%>
+  </li>
+</ul>
+<% end -%>

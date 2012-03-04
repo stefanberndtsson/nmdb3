@@ -1,0 +1,10 @@
+<%= render :partial => 'head' %>
+<h2>Quotes</h2>
+<% for quote in @movie.quotes.sort_by {|x| x.sort_order} -%>
+<!-- <%= quote.id %> -->
+<p class="quote">
+  <% for quote_data in quote.quote_data.sort_by {|x| x.sort_order} -%>
+  <%= display_quote_data(quote_data.value, @movie) %><br/>
+  <% end -%>
+</p>
+<% end -%>

@@ -1,0 +1,44 @@
+.result {
+    float: left;
+    width: 65%;
+    padding-left: 0;
+}
+
+.result_inner {
+    padding-left: 2em;
+}
+
+.facets {
+    float: right;
+    width: 35%;
+    background-color: #ddf;
+}
+
+.facet_inner {
+    padding-left: 2em;
+    padding-bottom: 2em;
+}
+
+.score {
+    display: none;
+}
+
+#year_range {
+    margin-right: 2em;
+    margin-bottom: 0.25em;
+    margin-top: -0.5em;
+}
+
+#year_link_template {
+    display: none;
+}
+
+#rating_range {
+    margin-right: 2em;
+    margin-bottom: 0.25em;
+    margin-top: -0.5em;
+}
+
+#rating_link_template {
+    display: none;
+}

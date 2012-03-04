@@ -1,0 +1,23 @@
+table.summary {
+    width: 100%;
+    margin-bottom: 0.5em;
+}
+
+table.summary tr th {
+    width: 8em;
+    text-align: left;
+}
+
+table.tablesorter thead tr .header {
+    background-image:url("bg.gif");
+    background-position:right center;
+    background-repeat:no-repeat;
+    cursor:pointer;
+}
+
+table.tablesorter thead tr .headerSortUp {
+    background-image:url("asc.gif");
+}
+table.tablesorter thead tr .headerSortDown {
+    background-image:url("desc.gif");
+}

@@ -1,0 +1,12 @@
+<% if current_user.show_setting("show_"+key) -%>
+<div class="update_toggle"
+     title="<%= title %>"
+     id="update_<%= key %>"
+     update="update_<%= key %>"
+     url="<%= url_for(:controller => :user, :action => :toggle_movie_data,
+	  :id => current_user, :movie_id => @movie.id,
+	  :key => key) %>">
+  <%= render :partial => 'user/ajax_toggle_data', 
+  :locals => { :user => current_user, :movie => @movie, :key => key } %>
+</div>
+<% end -%>

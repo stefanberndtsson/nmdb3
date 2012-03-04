@@ -1,0 +1,18 @@
+<%= render :partial => 'head' %>
+<h2>Download</h2>
+<ul>
+  <li>
+    Complete
+    <%= link_to_page("XML", :movie, :index, @movie.id, :format => :xml) %>
+    or
+    <%= link_to_page("JSON", :movie, :index, @movie.id, :format => :json) %>
+    for <%= @movie.display %>
+  </li>
+  <li>
+    Reduced
+    <%= link_to_page("XML", :movie, :index, @movie.id, :format => :xml, :richness => :reduced) %>
+    or
+    <%= link_to_page("JSON", :movie, :index, @movie.id, :format => :json, :richness => :reduced) %>
+    for <%= @movie.display %>
+  </li>
+</ul>

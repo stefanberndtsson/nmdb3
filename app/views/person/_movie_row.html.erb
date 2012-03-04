@@ -1,0 +1,34 @@
+<% if movie_row.class == Movie -%>
+<% movie = movie_row -%>
+<% else -%>
+<% movie = movie_row.movie -%>
+<% end -%>
+<tr class="body">
+  <th><%= cnt + 1 %></th>
+  <td>
+    <%= display_title(movie, "<br/>&nbsp;-&nbsp;") %>
+    <% if !movie.active_episodes.blank? -%>
+    (<%= pluralize(movie.active_episodes.size, "episode") %>)
+    <% if movie.active_episodes.size > 5 -%>
+    <%= link_to_function "show all", "toggle_hidden('hidden_id_#{movie.id}');", 
+                         :class => "show_link_hidden_id_#{movie.id}" %>
+    <% end -%>
+    <% end -%>
+  </td>
+  <td>
+    <% if movie_row.class == Occupation -%>
+    <%= movie_row.display %>
+    <% end -%>
+  </td>
+</tr>
+<% movie.active_episodes.each_with_index do |active_ep,i|
+     extra = " hidden hidden_id_#{movie.id}" if i >= 5 -%>
+<tr class="body<%= extra %>">
+  <th></th>
+  <td>
+    &nbsp;&nbsp;-&nbsp;&nbsp<%= link_to_movie(active_ep[:episode], active_ep[:episode].episode_display) %>
+  </td>
+  <td><%= active_ep[:occupation].display %></td>
+</tr>
+<% end -%>
+  

@@ -1,0 +1,5 @@
+<div class="toggle_box">
+  <div class="<%= defined?(force) ? force : user.get_movie_toggle_status(movie, key) %>">
+    <%= t("user_movie_data."+key) %>
+  </div>
+</div>

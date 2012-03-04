@@ -1,0 +1,63 @@
+<ul class="pageitem">
+  <li class="textbox">
+<% if !@movie.movie_akas.empty? && !@movie.real_title?(0) %>
+  <span class="header">Original title</span>
+  <p><%= @movie.full_title %></p>
+<% end %>
+
+<% if !@movie.movie_akas.blank? %>
+  <span class="header">Also known as</span>
+  <p>
+<% for aka_title in @movie.movie_akas %>
+  <%= ([aka_title.title, aka_title.info]-[nil]).join(" ") %><br/>
+<% end %>
+  </p>
+<% end %>
+
+<% if !@movie.crew_as_role("producer").blank? %>
+  <span class="header">Producers</span>
+  <p>
+<% for producer in @movie.crew_as_role("producer") %>
+  <%= ([link_to_person(producer.person, true, :mobile), producer.extras]-[nil]).join(" ").html_safe %><br/>
+<% end %>
+  </p>
+<% end %>
+
+<% if !@movie.crew_as_role("director").blank? %>
+  <span class="header">Directors</span>
+  <p>
+<% for director in @movie.crew_as_role("director") %>
+  <%= ([link_to_person(director.person, true, :mobile), director.extras]-[nil]).join(" ").html_safe %><br/>
+<% end %>
+  </p>
+<% end %>
+
+<% if !@movie.crew_as_role("writer").blank? %>
+  <span class="header">Writers</span>
+  <p>
+<% for writer in @movie.crew_as_role("writer") %>
+  <%= ([link_to_person(writer.person, true, :mobile), writer.extras]-[nil]).join(" ").html_safe %><br/>
+<% end %>
+  </p>
+<% end %>
+
+<% if !@movie.running_times.blank? %>
+  <span class="header">Running time</span>
+  <p>
+<% for rt in @movie.running_times %>
+  <%= [rt.location ? "#{rt.location}:" : "", rt.running_time, " min",rt.info ? " #{rt.info}" : ""].join("") %><br/>
+<% end %>
+  </p>
+<% end %>
+
+<% if !@movie.languages.blank? %>
+  <span class="header">Language</span>
+  <p>
+<% for lang in @movie.languages %>
+  <%= lang.language %><br/>
+<% end %>
+  </p>
+<% end %>
+
+  </li>
+</ul>

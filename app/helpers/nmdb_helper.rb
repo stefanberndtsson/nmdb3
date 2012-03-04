@@ -1,0 +1,2 @@
+module NmdbHelper
+end

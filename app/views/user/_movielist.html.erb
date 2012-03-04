@@ -1,0 +1,57 @@
+<%= will_paginate movielist %>
+<table id="user_movielist_nojssort" class="cast tablesorter">
+  <thead>
+    <tr class="head">
+      <th align="left"></th>
+      <th align="center" style="width: 7em;">Status</th>
+      <th align="left"><%= sortable "movies.title", "Movie" %></th>
+      <th align="left" style="width: 14em;"><%= sortable "user_movie_data.updated_at", "Date" %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% movielist.each_with_index do |item,i| -%>
+    <tr class="body">
+      <th><%= i+1 %></th>
+      <th align="center">
+	<div class="user_toggle_settings" style="margin-right: 1em;">
+	  <div class="update_toggle"
+	       title="Wishlist"
+	       id="update_wish_<%= item.movie.id %>"
+	       update="update_wish_<%= item.movie.id %>"
+	       url="<%= url_for(:controller => :user, :action => :toggle_movie_data,
+	            :id => current_user, :movie_id => item.movie.id,
+		    :key => "wish") %>">
+	    <%= render :partial => 'user/ajax_toggle_data', 
+            :locals => { :user => current_user, :movie => item.movie, :key => "wish", 
+	    :force => @all_data["wish"][item.movie.id] || "false" } %>
+	  </div>
+	  <div class="update_toggle"
+	       title="Own"
+	       id="update_owns_<%= item.movie.id %>"
+	       update="update_owns_<%= item.movie.id %>"
+	       url="<%= url_for(:controller => :user, :action => :toggle_movie_data,
+	            :id => current_user, :movie_id => item.movie.id,
+		    :key => "owns") %>">
+	    <%= render :partial => 'user/ajax_toggle_data', 
+            :locals => { :user => current_user, :movie => item.movie, :key => "owns",
+	    :force => @all_data["owns"][item.movie.id] || "false" } %>
+	  </div>
+	  <div class="update_toggle"
+	       title="Seen"
+	       id="update_seen_<%= item.movie.id %>"
+	       update="update_seen_<%= item.movie.id %>"
+	       url="<%= url_for(:controller => :user, :action => :toggle_movie_data,
+	            :id => current_user, :movie_id => item.movie.id,
+		    :key => "seen") %>">
+	    <%= render :partial => 'user/ajax_toggle_data', 
+            :locals => { :user => current_user, :movie => item.movie, :key => "seen",
+	    :force => @all_data["seen"][item.movie.id] || "false" } %>
+	  </div>
+	</div>
+      </th>
+      <td><%= display_title(item.movie, "<br/>&nbsp;-&nbsp;") %>
+      <td><%= display_date(item.updated_at) %>
+    </tr>
+    <% end -%>
+  </tbody>
+</table>

@@ -1,0 +1,39 @@
+<%= render :partial => 'head' %>
+<h2>Movie connections</h2>
+<% if false && show_debug? -%>
+<% @movie.scan_movie_connections -%>
+<hr/>
+<h3>Movies in connection list not found on imdb page</h3>
+<ul>
+  <% for unfound in @movie.debug_mc_unfound -%>
+  <li><%= display_title(Movie.find(unfound[0]), "&nbsp;-&nbsp;") %> (<%= unfound[1] %>)</li>
+  <ul>
+    <li><%= Movie.find(unfound[0]).imdb_movie_title %></li>
+  </ul>
+  <% end -%>
+</ul>
+<hr/>
+<h3>Movie with info on imdb page not connected to connection list</h3>
+<ul>
+  <% for um in @movie.debug_mc_unmatched -%>
+  <li><%= um[0][0] %>: <%= um[0][1] %> (<%= um[0][2] %>) (<%= um[0][3] %>) (<%= um[0][4] %>)</li>
+  <ul>
+    <li><%= um[1] %></li>
+  </ul>
+  <% end -%>
+</ul>
+<hr/>
+<a href="http://www.imdb.com/title/tt<%= @movie.imdbid %>/movieconnections">To IMDB</a>
+<hr/>
+<% end -%>
+<% for type in @mcon.keys.sort_by {|x| MovieConnectionType.find_by_connection_type(x).sort_order } -%>
+<h3><%= type %></h3>
+<ul class="mc_top">
+  <% for c in @mcon[type] -%>
+  <li><%= display_title(c.linked_movie, "&nbsp;-&nbsp;") %></li>
+  <% if c.imdb_extra_info -%>
+  <ul class="mc_sub"><li><%= c.imdb_extra_info.html_safe %></li></ul>
+  <% end -%>
+  <% end -%>
+</ul>
+<% end -%>

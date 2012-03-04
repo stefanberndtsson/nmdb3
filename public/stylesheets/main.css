@@ -1,0 +1,107 @@
+body {
+    background-color: #fff;
+    margin: 0 0 0 0;
+}
+
+#top {
+    position: relative;
+    text-align: center;
+    background-color: #88f;
+    height: 2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+#menu_col {
+    padding-left: 0em;
+}
+
+#menu_col h2 {
+    text-align: center;
+}
+
+#menu_col ul {
+    margin-top: 0em;
+    margin-left: 0.5em;
+    padding-left: 0em;
+}
+
+#menu_col ul li {
+    list-style-type: none;
+    margin-left: 0em;
+    padding-left: 0.5em;
+    padding-right: 0em;
+    padding-bottom: 0.1em;
+    font-size: 115%;
+}
+
+#menu_col ul li a {
+    display: block;
+    text-decoration: none;
+}
+
+#menu_col ul li a:visited {
+    color: blue;
+}
+
+#menu_col ul li a {
+    display: block;
+    text-decoration: none;
+}
+
+#menu_col ul li.selected {
+    background-color: #fff;
+}
+
+#menu_col ul li.unselected:hover {
+    background-color: #ff3;
+}
+
+#main {
+    width: 100%;
+}
+
+.menu {
+    float: left;
+    width: 14em;
+    background-color: #ddf;
+}
+
+#bottom h1 {
+    background-color: #999;
+    margin-top: 0em;
+    padding-top: 0.2em;
+    text-align: center;
+    margin-bottom: 0em;
+    padding-bottom: 0.2em;
+}
+
+#rtime #total_time {
+    position: fixed;
+    bottom: 0px;
+    right: 0px;
+    padding: 5px;
+    background-color: white;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+}
+
+#userdata {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    padding-right: 5px;
+    padding-top: 2px;
+}
+
+#userdata .name {
+    font-weight: bold;
+}
+
+#userdata .link {
+    font-weight: bold;
+}
+
+#spinner img {
+    width: 14em;
+}

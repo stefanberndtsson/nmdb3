@@ -1,0 +1,28 @@
+<%= render :partial => 'head' %>
+<div class="person_biography">
+  <h2><%= t("menu."+params[:action]) %></h2>
+  <% if !@aka_names.blank? -%>
+  <h4>Also known as</h4>
+  <p>
+    <% for aka_name in @aka_names -%>
+    <%= aka_name.name %><br/>
+    <% end -%>
+  </p>
+  <% end -%>
+  <% for key in @md_keys -%>
+  <% if !@metadata[key].blank? -%>
+  <h4><%= t("person_metadata."+@metadata[key][0].key) %></h4>
+  <% for entry in @metadata[key] -%>
+  <p>
+    <%= decode_links(entry.value) %>
+    <% if key == "BG" -%>
+    <br/><b>Written by: </b><i><%= entry.author %></i>
+    <% end -%>
+    <% if @person.age -%>
+    <%= "<br/>(Age: #{distance_of_time_in_words(*@person.age)})".html_safe if key == "DB" %>
+    <% end -%>
+  </p>
+  <% end -%>
+  <% end -%>
+  <% end -%>
+</div>

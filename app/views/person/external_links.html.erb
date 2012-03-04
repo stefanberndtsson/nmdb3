@@ -1,0 +1,17 @@
+<%= render :partial => 'head' %>
+<h2>External links</h2>
+<h3>Find person on</h3>
+<ul>
+  <li> 
+    <%= link_to "Google", "http://www.google.com/search?q=#{CGI.escape(@person.name)}&hl=en" %>
+  </li>
+  <li>
+    <%= link_to "Wikipedia", "http://en.wikipedia.org/wiki/Special:Search?search=#{CGI.escape(@wikipedia_page)}&go=Go" %>
+  </li>
+  <li> 
+    <%= link_to "Google Images", "http://www.google.com/images?q=#{CGI.escape(@person.name)}&hl=en" %>
+  </li>
+  <li> 
+    <%= link_to "Youtube", "http://www.youtube.com/results?search_query=#{CGI.escape(@person.name)}&aq=f&oq=" %>
+  </li>
+</ul>

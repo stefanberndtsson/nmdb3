@@ -1,0 +1,59 @@
+.data {
+    margin-left: 14em;
+}
+
+.data_inner {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    margin-bottom: 4em;
+}
+
+.data_inner ul {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+table.movies {
+    max-width: 100%;
+    width: 65%;
+    min-width: 500px;
+}
+
+table.movies tr th:first-child {
+    width: 5%;
+}
+
+table.movies tr th:first-child+td {
+    width: 50%;
+}
+
+table.movies tr th:first-child+td+td {
+    width: 45%;
+}
+
+table.movies tr.head {
+    background-color: #bbf;
+}
+
+table.movies tr.body {
+    background-color: #ccc;
+}
+
+.data_inner .person_biography h4 {
+    margin-bottom: 0.2em;
+}
+
+.data_inner .person_biography p {
+    margin-top: 0.2em;
+}
+
+#person_image img {
+    width: 13.2em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    padding-bottom: 0.4em;
+}
+
+.hidden {
+    display: none;
+}

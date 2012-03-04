@@ -1,0 +1,4 @@
+URL is: <%= @image_url.inspect %><br/>
+Next Opensearch: <%= @next_opensearch_id.inspect %><br/>
+Next Query: <%= @next_query_id.inspect %><br/>
+<%= link_to "Go to next", :next_opensearch_id => @next_opensearch_id, :next_query_id => @next_query_id %>

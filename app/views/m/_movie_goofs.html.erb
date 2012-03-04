@@ -1,0 +1,8 @@
+<% for goof in @movie.goofs %>
+<ul class="pageitem">
+  <li class="textbox">
+    <span class="header"><%= t("goof."+goof.category) %></span>
+    <%= decode_links(goof.goof, :mobile) %>
+  </li>
+</ul>
+<% end %>

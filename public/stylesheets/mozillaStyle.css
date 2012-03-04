@@ -1,0 +1,196 @@
+body { /* Converted 3 properties*/
+	font-size-adjust:none;
+	/* Mozilla doesnt implement repeating gradients the same way as Webkit..
+	 * Dont override the background-size property but instead do the background property only
+	 */
+    background: -moz-repeating-linear-gradient(left, #c5ccd4, #c5ccd4 0.31098em, #cbd2d8 0.31536em, #cbd2d8 0.438em);
+}
+#topbar.black {/* Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #858585 0%, #636363 3%, #202020 50%, black 51%, black 97%, #262626 100%);
+}
+#topbar.transparent {/* Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, rgba(133,133,133,0.7) 0%, rgba(99,99,99,0.7) 3%, rgba(32,32,32,0.7) 50%, rgba(0,0,0,0.7) 51%, rgba(0,0,0,0.7) 97%, rgba(38,38,38,0.7) 100%);
+}
+#topbar {/* Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #cdd5df 0%, #b0bccd 3%, #889bb3 50%, #8195af 51%, #6d84a2 97%, #2d3642 100%);
+}
+.pageitem {/* Converted 1 border radius*/
+	-moz-border-radius: 8px;
+}
+#tributton, #duobutton {/* Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #cdd4d9 0%, #c0c9cf 3%, #abb7bf 97%, #81929f 100%);
+}
+#tributton .links, #duobutton .links {/* Converted 1 border image*/
+	-moz-border-image: url("../images/tributton.png") 0 4 0 4;
+}
+#tributton a:first-child, #duobutton a:first-child {/* Converted 2 corner radiuses*/
+	-moz-border-radius-topleft: 5px;
+	-moz-border-radius-bottomleft: 5px;
+}
+#tributton a:last-child, #duobutton a:last-child {/* Converted 2 corner radiuses*/
+	-moz-border-radius-topright: 5px;
+	-moz-border-radius-bottomright: 5px;
+}
+#tributton a:hover, #tributton a#pressed, #duobutton a:hover, #duobutton a#pressed {/* Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #7b8b9f 0%, #8c9baf 3%, #647792 100%);
+}
+#triselectionbuttons, #duoselectionbuttons {/* Converted 1 border image*/
+	-moz-border-image: url('../images/navbutton.png') 0 5 0 5;
+}
+#triselectionbuttons a:first-child, #duoselectionbuttons a:first-child {/* Converted 2 corner radiuses*/
+	-moz-border-radius-topleft: 6px;
+	-moz-border-radius-bottomleft: 6px;
+}
+#triselectionbuttons a, #duoselectionbuttons a {/* Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #909baa 0%, #a5b4c6 3%, #798eaa 50%, #6b83a1 51%, #6e85a3 97%, #526379 100%);
+}
+#triselectionbuttons a:last-child, #duoselectionbuttons a:last-child {/* Converted 2 corner radiuses*/
+	-moz-border-radius-topright: 6px;
+	-moz-border-radius-bottomright: 6px;
+}
+#doublead a {/*Converted radius and gradient*/
+	-moz-border-radius: 8px;
+	background: -moz-linear-gradient(-90deg, #7c7c7c 0%, #858585 3%, #a4a4a4 97%, #c2c2c2 100%);
+}
+.searchbox {/*Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #f1f3f4 0%, #e0e4e7 3%, #c7cfd4 50%, #bec7cd 51%, #b4bec6 97%, #8999a5 100%);
+}
+.searchbox form {/*Converted border image to mozilla*/
+	-moz-border-image: url('../images/searchfield.png') 4 14 1 24;
+}
+.searchbox input[type="text"] {/*Converted mozilla appearance tag*/
+	-moz-appearance: none;
+}
+.pageitem li:first-child:hover, .pageitem li:first-child a, .radiobutton:first-child input, .select:first-child select, li.button:first-child input, .bigfield:first-child input {
+	/*Converted border radius*/
+	-moz-border-radius-topleft: 8px;
+	-moz-border-radius-topright: 8px;
+}
+.pageitem li:last-child:hover, .pageitem li:last-child a, .radiobutton:last-child input, .select:last-child select, li.button:last-child input, .bigfield:last-child input {
+	/*Converted border radius*/
+	-moz-border-radius-bottomleft: 8px;
+	-moz-border-radius-bottomright: 8px;
+}
+.menu:hover, .store:hover, .list #content li a:hover, .list .withimage:hover, .applist li:hover:nth-child(n),.ipodlist li:hover:nth-child(n) {
+	/*Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #058cf5 0%, #015fe6 100%);
+}
+.store .image {/*Converted 1 gradient and 1 background size*/
+	background: -moz-linear-gradient(-90deg, #eff1f5 0%, #d6dce6 100%);
+	-moz-background-size: 90px;
+}
+.applist .image {/*4 changes*/
+	-moz-border-radius: 8px;
+	-moz-box-shadow: 0 2px 3px rgb(0,0,0);
+	background: -moz-linear-gradient(-90deg, #7c7c7c 0%, #858585 3%, #a4a4a4 97%, #c2c2c2 100%);
+	-moz-background-size: 57px;
+}
+li:first-child.store .image, .store:first-child a {/*Converted border radius*/
+	-moz-border-radius-topleft: 8px 8px;
+}
+li:last-child.store .image, .store:last-child a {/*Converted border radius*/
+	-moz-border-radius-bottomleft: 8px 8px;
+}
+.applist li:nth-child(even) {/*Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #adadb0 0%, #adadb0 98%, #898a8d 100%);
+}
+.applist li:nth-child(odd) {/*Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #98989c 0%, #98989c 98%, #898a8d 100%);
+}
+.ipodlist li:nth-child(even) {/*Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #414041 0%, rgba(45,45,45,0.2) 3%, rgba(45,45,45,0.2) 100%);
+}
+.ipodlist li:nth-child(odd) {/*Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #414041 0%, rgba(50,50,50,0.4) 3%, rgba(50,50,50,0.4) 100%);
+}
+.ipodlist #content {/*TODO NEED TO CONVERT RADIAL*/
+	background: -webkit-gradient(radial, 50% -70, 0, 50% 0, 200, from(#444444), to(rgb(13, 13, 13))) rgb(13, 13, 13);
+}
+.list .title {/*Converted 1 gradient*/
+	background: -moz-linear-gradient(-90deg, #a5b1ba 0%, #909faa 3%, #b5bfc6 97%, #989ea4 100%);
+}
+.black #leftnav a:first-child, .transparent #leftnav a:first-child {/*Converted border image*/
+	-moz-border-image: url("../images/navleftblack.png") 0 5 0 13;
+}
+.black #leftnav a, .transparent #leftnav a {/*Converted border image*/
+	-moz-border-image: url("../images/navlinkleftblack.png") 0 5 0 13;
+}
+.black #rightnav a:first-child, .transparent #rightnav a:first-child {/*Converted border image*/
+	-moz-border-image: url("../images/navrightblack.png") 0 13 0 5;
+}
+.black #rightnav a, .transparent #rightnav a {/*Converted border image*/
+	-moz-border-image: url("../images/navlinkrightblack.png") 0 13 0 5;
+}
+.black #leftbutton a, .black #rightbutton a, .transparent #leftbutton a, .transparent #rightbutton a {/*Converted border image*/
+	-moz-border-image: url("../images/navbuttonblack.png") 0 5 0 5;
+}
+#leftnav a:first-child {/*Converted border image and border radius*/
+	-moz-border-image: url("../images/navleft.png") 0 5 0 13;
+	-moz-border-radius-topleft: 16px;
+	-moz-border-radius-bottomleft: 16px;
+	-moz-border-radius-topright: 6px;
+	-moz-border-radius-bottomright: 6px;
+}
+#leftnav a {/*Converted border image and border radius*/
+	-moz-border-image: url("../images/navlinkleft.png") 0 5 0 13;
+	-moz-border-radius-topleft: 16px;
+	-moz-border-radius-bottomleft: 16px;
+	-moz-border-radius-topright: 6px;
+	-moz-border-radius-bottomright: 6px;
+}
+#rightnav a {/*Converted border image and border radius*/
+	-moz-border-image: url("../images/navlinkright.png") 0 13 0 5;
+	-moz-border-radius-topleft: 6px;
+	-moz-border-radius-bottomleft: 6px;
+	-moz-border-radius-topright: 16px;
+	-moz-border-radius-bottomright: 16px;
+}
+#rightnav a:first-child {/*Converted border image and border radius*/
+	-moz-border-image: url("../images/navright.png") 0 13 0 5;
+	-moz-border-radius-topleft: 6px;
+	-moz-border-radius-bottomleft: 6px;
+	-moz-border-radius-topright: 16px;
+	-moz-border-radius-bottomright: 16px;
+}
+#leftbutton a, #rightbutton a {/*Converted border image and border radius*/
+	-moz-border-image: url("../images/navbutton.png") 0 5 0 5;
+	-moz-border-radius: 6px;
+}
+#blueleftbutton a, #bluerightbutton a {/*Converted border image and border radius*/
+	-moz-border-image: url("../images/navbuttonblue.png") 0 5 0 5;
+	-moz-border-radius: 6px;
+}
+input[type="checkbox"] {/*Converted appearance*/
+	-moz-appearance: none;
+}
+input[type="radio"] {/*Converted appearance and border radius*/
+	/*-moz-appearance: none;*/
+	-moz-border-radius: 0;
+}
+select {/*converted appearance*/
+	-moz-appearance: none;
+}
+.select select {/*converted appearance*/
+	-moz-border-radius: 0;
+}
+.select .arrow {/*converted transform*/
+	-moz-transform: rotate(90deg);
+}
+.button input {/*converted appearance and border radius*/
+	-moz-appearance: none;
+	-moz-border-radius: 0;
+}
+.bigfield input {/*converted appearance and border radius*/
+	-moz-appearance: none;
+	-moz-border-radius: 0;
+}
+.smallfield input {/*converted appearance and border radius*/
+	-moz-appearance: none;
+	-moz-border-radius: 0;
+}
+.smallfield:first-child input {/*converted border radius*/
+	-moz-border-radius-topright: 8px;
+}
+.smallfield:last-child input {/*converted border radius*/
+	-moz-border-radius-bottomright: 8px;
+}

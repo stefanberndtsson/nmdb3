@@ -1,0 +1,10 @@
+<%= render :partial => 'head' %>
+<h2>Technical</h2>
+<% for type in @technicals.keys.sort_by { |x| Technical.sort_value(x) } -%>
+<h3><%= t("technical."+type) %></h3>
+<ul>
+  <% for tech in @technicals[type] -%>
+  <li><%= tech.value %></li>
+  <% end -%>
+</ul>
+<% end -%>

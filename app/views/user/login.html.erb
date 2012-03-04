@@ -1,0 +1,31 @@
+<%= render :partial => 'head' %>
+<div class="loginbox">
+<%= form_for :user, :url => {:action => :verify_login} do |f| -%>
+<%= hidden_field_tag :bounceback, @bounceback %>
+<%= hidden_field_tag :fr, @forced_redirect_from %>
+<table class="login">
+  <tr>
+    <td>
+      <label for="user_username">Username</label>
+    </td>
+    <td>
+      <%= f.text_field :username %>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <label for="user_password">Password</label>
+    </td>
+    <td>
+      <%= f.password_field :password %>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <%= submit_tag "Login" %>
+    </td>
+    <td></td>
+  </tr>
+</table>
+<% end -%>
+</div>

@@ -1,0 +1,31 @@
+<% if !@aka_names.blank? %>
+<ul class="pageitem">
+  <li class="textbox">
+    <span class="header">Also known as</span>
+    <% for aka_name in @aka_names %>
+    <%= aka_name.name %><br/>
+    <% end %>
+</ul>
+<% end %>
+<% for key in @md_keys %>
+  <% if !@metadata[key].blank? %>
+  <ul class="pageitem">
+    <% first = true %>
+    <% for entry in @metadata[key] %>
+      <li class="textbox">
+        <% if first %>
+          <span class="header"><%= t("person_metadata."+@metadata[key][0].key) %></span>
+	  <% first = false %>
+        <% end %>
+        <%= decode_links(entry.value, :mobile) %>
+	<% if key == "BG" %>
+	<br/><b>Written by: </b><i><%= entry.author %></i>
+	<% end %>
+	<% if @person.age %>
+        <%= "<br/>(Age: #{distance_of_time_in_words(*@person.age)})".html_safe if key == "DB" %>
+	<% end %>
+      </li>
+    <% end %>
+  </ul>
+  <% end %>
+<% end %>

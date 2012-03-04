@@ -1,0 +1,90 @@
+.data {
+    margin-left: 14em;
+}
+
+.data_inner {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    margin-bottom: 4em;
+}
+
+.data_inner ul {
+    padding-left: 1em;
+    padding-right: 1em;
+}
+
+table.cast {
+    max-width: 100%;
+    width: 65%;
+    min-width: 500px;
+}
+
+table.cast tr th:first-child {
+    width: 5%;
+}
+
+table.cast tr.head {
+    background-color: #bbf;
+}
+
+table.cast tr.body {
+    background-color: #ccc;
+}
+
+.goof_category {
+    font-weight: bold;
+}
+
+.quote {
+    margin-bottom: 1.25em;
+    max-width: 60em;
+}
+
+.quote_comment {
+    font-style: italic;
+}
+
+.quote_quoter {
+    font-weight: bold;
+}
+
+#movie_image img {
+    width: 13.2em;
+    padding-left: 0.4em;
+    padding-right: 0.4em;
+    padding-bottom: 0.4em;
+}
+
+.toggle_box {
+    float: right;
+    display: inline-block;
+    border: 1px solid black;
+    width: 1.5em;
+    cursor: pointer;
+}
+
+.toggle_box .false {
+    color: #ccc;
+    text-decoration: line-through;
+}
+
+.toggle_box .true {
+    color: white;
+}
+
+.header_offset {
+    margin-left: 6em;
+    padding-left: 8px;
+}
+
+ul.mc_top {
+    margin-top: -0.25em;
+}
+
+ul.mc_top > li {
+    margin-top: 0.25em;
+}
+
+ul.mc_sub {
+    list-style-type: square;
+}

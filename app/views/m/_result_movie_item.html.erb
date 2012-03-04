@@ -1,0 +1,26 @@
+<li class="store">
+<a class="noeffect" href="<%= url_for(:action => :movie, :id => result.id) %>">
+  <% if result.image_url %>
+    <%= image_tag result.image_url, :class => "image" %>
+  <% end %>
+  <% if result.is_episode? %>
+  <span class="name"><%= result.imdb_movie_title %></span>
+  <% else %>
+  <span class="name"><%= result.display %></span>
+  <% end %>
+  <% if result.is_episode? %>
+  <span class="starcomment">
+   <span class="nowrap"><%= result.episode_position_display %></span>
+   <span class="nowrap"><%= result.main.display %></span>
+  </span>
+  <% else %>
+  <% if !result.cast.blank? %>
+  <span class="starcomment"><%= cast_list(result) %></span>
+  <% end %>
+  <% end %>
+  <% if !result.movie_directors.blank? %>
+  <span class="comment"><%= result.movie_directors.first[:person].name(false) %></span>
+  <% end %>
+  <span class="arrow"></span>
+</a>
+</li>

@@ -1,0 +1,18 @@
+<%= render :partial => 'head' %>
+<h2>Similar movies</h2>
+<table class="cast">
+  <tr class="head">
+    <th align="left">Match</th>
+    <th align="left">Movie</th>
+    <th align="center" width="*1">Rating</th>
+  </tr>
+  <% for movie in @movie.find_similar-%>
+  <tr class="body">
+    <th><%= movie[1] %></th>
+    <td><%= display_title(movie[0], "<br/>&nbsp;-&nbsp;") %>
+    <td align="center">
+      <%= movie[0].rating.rating if movie[0].rating %>
+    </td>
+  </tr>
+  <% end -%>
+</table>

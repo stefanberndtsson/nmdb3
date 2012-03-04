@@ -1,0 +1,42 @@
+<% content_for :title do %>
+<%= @source.titleize %> Search results
+<% end %>
+<% content_for :page_head do %>
+Query: <%= params[:search] %>
+<% end %>
+<div style="margin-bottom: 10px"></div>
+<%= render :partial => 'search', :locals => { :source => @source, :prefill => @query } %>
+
+<% if false %>
+<ul class="pageitem">
+  <li class="textbox">
+    <%= params.inspect %>
+  </li>
+  <li class="textbox">
+    <%= @filters.inspect %>
+  </li>
+</ul>
+<% end %>
+
+<% if !@show_facet_page %>
+<% if !@suggestion.blank? %>
+<ul class="pageitem">
+<li class="textbox"><span class="header">Suggested</span></li>
+<% if @results[:movies].blank? %>
+<% for suggestion in @suggestion %>
+  <%= render :partial => "result_#{suggestion.class.to_s.downcase}_item", :locals => { :result => suggestion } %>
+<% end %>
+<% else %>
+<li class="menu">
+  <a href="<%= url_for(:action => @suggestion.first.class.to_s.downcase, :id => @suggestion.first.id) %>">
+    <span class="name"><%= @suggestion.first.display %></span>
+    <% if !@suggestion.first.cast.blank? %>
+      <span class="comment"><%= cast_list(@suggestion.first) %></span>
+    <% end %>
+  </a>
+</li>
+<% end %>
+</ul>
+<% end %>
+<%= render :partial => "result_#{@source_partial[@source]}" %>
+<% end %>

@@ -1,0 +1,12 @@
+<%= render :partial => 'head' %>
+<%= display_date_of_birth(@person) %>
+<%= display_age(@person) %>
+<%= display_date_of_death(@person) %>
+<%= display_birth_name(@person) %>
+
+<%= display_movies(@person) %>
+<%= display_movies(@person, "self") %>
+<%= display_movies(@person, "archive") %>
+<%= display_movies(@person, "director") %>
+<%= display_movies(@person, "producer") %>
+<%= display_movies(@person, "writer") %>

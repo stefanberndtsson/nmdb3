@@ -1,0 +1,30 @@
+<%= render :partial => 'head' %>
+<%= display_original_title(@movie) %>
+<%= display_rating(@movie) %>
+<%= display_crew("Producers", @movie, "producer", true) %>
+<%= display_crew("Directors", @movie, "director", true) %>
+<%= display_crew("Writers", @movie, "writer", true) %>
+<%= display_genre(@movie) %>
+<%= display_keyword(@movie) %>
+<%= display_release_date(@movie) %>
+<%= display_tagline(@movie) %>
+<table class="cast">
+  <tr class="head">
+    <th></th>
+    <th>Cast</th>
+    <th>Character</th>
+  </tr>
+  <% for cast_member in @movie.cast -%>
+  <tr class="body">
+    <th><%= cast_member.sort_value %></th>
+    <td><%= link_to cast_member.person.name(true), 
+              :controller => :person, :id => cast_member.person.id %></td>
+    <td>
+      <%= cast_member.display %>
+      <% if cast_member.collected -%>
+      (<%= pluralize(cast_member.episode_count, "episode") %>)
+      <% end -%>
+    </td>
+  </tr>
+  <% end -%>
+</table>

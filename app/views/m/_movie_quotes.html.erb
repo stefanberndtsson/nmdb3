@@ -1,0 +1,9 @@
+<% for quote in @movie.quotes.sort_by {|x| x.sort_order} %>
+<ul class="pageitem">
+  <li class="textbox">
+    <% for quote_data in quote.quote_data.sort_by {|x| x.sort_order} %>
+      <%= display_quote_data(quote_data.value) %><br/>
+    <% end %>
+  </li>
+</ul>
+<% end %>

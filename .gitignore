@@ -1,0 +1,12 @@
+.bundle
+db/*.sqlite3
+log/*.log
+tmp/**/*
+Gemfile.lock
+doc/api
+doc/app
+db/schema.rb
+config/database.yml
+*~
+\#*#
+.#*

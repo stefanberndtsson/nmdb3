@@ -1,0 +1,22 @@
+<%= render :partial => 'head' %>
+<table width="100%">
+  <tr>
+    <td valign="top" width="25%">
+      <table class="by_table">
+        <% for genre in @grouped.keys.sort_by { |x| -@grouped[x].size } -%>
+        <tr>
+          <td><%= link_to_page(genre.genre, :person, :movies_by_genre, @person.id, 
+		  :anchor => "genre_#{genre.id}") %> (<%= @grouped[genre].size %>)</td>
+        </tr>
+        <% end -%>
+      </table>
+    </td>
+    <td valign="top" width="75%">
+      <% for genre in @grouped.keys.sort_by { |x| -@grouped[x].size } -%>
+      <div id="genre_<%= genre.id %>">
+	<%= render :partial => 'movies', :object => @grouped[genre], :locals => {:heading => genre.genre} %>
+      </div>
+      <% end -%>
+    </td>
+  </tr>
+</table>

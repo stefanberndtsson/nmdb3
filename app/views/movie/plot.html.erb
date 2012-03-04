@@ -1,0 +1,14 @@
+<%= render :partial => 'head' %>
+<h2>Plot Summary</h2>
+<% for plot in @movie.plots -%>
+<% next if !plot.plot -%>
+<ul>
+<li><%= decode_links(plot.plot) %><br/>
+  <i><%= plot.author %></i>
+</li>
+</ul>
+<% end -%>
+<% if WikipediaFetcher.plot(@movie) && !@movie.is_episode-%>
+<h2>Wikipedia Plot</h2>
+<%= WikipediaFetcher.plot(@movie).html_safe %>
+<% end -%>

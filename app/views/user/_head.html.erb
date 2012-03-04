@@ -1,0 +1,19 @@
+<% content_for :title do -%>
+<% if defined?(title) -%>
+[N] <%= title %>
+<% else -%>
+[N] User
+<% end -%>
+<% end -%>
+<% content_for :page_head do -%>
+<% if defined?(title) -%>
+<%= title %>
+<% else -%>
+User
+<% end -%>
+<% end -%>
+<% content_for :stylesheet do -%>
+<%= stylesheet_link_tag "user" %>
+<%= stylesheet_link_tag "movie" %>
+<%= stylesheet_link_tag "common" %>
+<% end -%>

@@ -1,0 +1,12 @@
+<% content_for :title do %>
+Search
+<% end %>
+<% content_for :page_head do %>
+Search
+<% end %>
+<div style="margin-bottom: 10px"></div>
+<%= render :partial => 'search', :locals => { :source => "movies" } %>
+<%= render :partial => 'search', :locals => { :source => "people" } %>
+<%= render :partial => 'search', :locals => { :source => "plots" } %>
+<%= render :partial => 'search', :locals => { :source => "quotes" } %>
+

@@ -1,0 +1,22 @@
+<%= render :partial => 'head' %>
+Seasons: 
+<% for season in @episodes.keys.sort_by {|x| x == "Unknown" ? 999999999999 : x } -%>
+<%= link_to "#{season}", :anchor => "season_#{season}", :page => @current_page %>&nbsp;
+<% end -%>
+<% for season in @episodes.keys.sort_by {|x| x == "Unknown" ? 999999999999 : x } -%>
+<h2 id="season_<%= season %>">Season <%= season %></h2>
+<% for episode in @episodes[season].sort_by {|x| x.episode_episode } -%>
+<h3 style="padding-top: 5px"><%= episode.episode_season %>:<%= episode.episode_episode %>&nbsp;<%= 
+link_to_movie(episode, episode.episode_name || "Unnamed episode") %></h3>
+<% if !episode.plots.empty? -%>
+<%= decode_links(episode.plots[0].plot) if !episode.plots.empty? %>
+<% end -%>
+<% if !episode.plots.empty? && episode.first_release_date -%>
+<p/>
+<% end -%>
+<% if episode.first_release_date -%>
+<b>Released: </b><%= episode.first_release_date.release_date %>
+<% end -%>
+<% end -%>
+<hr/>
+<% end -%>

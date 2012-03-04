@@ -1,0 +1,6 @@
+<ul class="pageitem">
+<li class="textbox"><span class="header"><%= pluralize(@results[:movies_count], "movie") %> found</span></li> 
+<% for result in @results[:movies][0..@max_results] %>
+<%= render :partial => 'result_movie_item', :locals => { :result => result } %>
+<% end %>
+</ul>

@@ -1,0 +1,7 @@
+<%= render :partial => 'head' %>
+<h2>Crazy credits</h2>
+<% for credit in @movie.crazy_credits -%>
+<ul style="width: 50%;">
+<li><%= decode_links(credit.credit) %></li>
+</ul>
+<% end -%>

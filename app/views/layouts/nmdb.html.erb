@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+          "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<% @timer ||= { } -%>
+<% @timer[:view] = Time.now -%>
+<html>
+  <head>
+    <title><%= yield :title %></title>
+    <%= stylesheet_link_tag "main", "jquery.autocomplete" %>
+    <%= javascript_include_tag :defaults, "jquery.tablesorter.min.js", (use_autocomplete? ? "jquery.autocomplete.js" : "") %>
+    <%= yield :stylesheet %>
+  </head>
+  <body>
+    <div id="top">
+      <div id="search">
+        <%= form_for :query, :url => { :controller => :search, :action => :result }, :html => {:method => :get} do |f| -%>
+        <b>Search: </b><%= text_field_tag :query, params[:query], :size => 30, :class => "autocomplete_search", "data-url" => url_for(:controller => :search, :action => :autocomplete_search) %>
+        <%=  select_tag :source, options_for_select([["All",""],
+             ["Movies","movies"],["People","people"],["Plots", "plots"],["Quotes","quotes"]], @selected) %>
+        <%= submit_tag "Search" %>
+        <% end -%>
+	<div class="autocomplete"></div>
+      </div>
+      <%= render :partial => 'layouts/userdata' %>
+    </div>
+    <div id="bottom">
+      <h1><%= yield :page_head %></h1>
+      <% if menu -%>
+      <div class="menu">
+      <div id="menu_col">
+        <h2>Sections</h2>
+        <%= menu %>
+      </div>
+      <div id="spinner" style="display: none;"><%= image_tag "ajax-loader.gif" %></div>
+      <%= yield :image %>
+      </div>
+      <% end -%>
+      <div id="main">
+        <div class="content">
+	  <div class="data">
+	    <div class="data_inner">
+              <%= yield %>
+	    </div>
+	  </div>
+        </div>
+      </div>
+    </div>
+    <div id="rtime">
+      <% @timer[:end] = Time.now -%>
+      <div id="total_time">
+	<b>Total time:</b> <%= display_total_time(@timer) %>
+      </div>
+    </div>
+  </body>
+</html>

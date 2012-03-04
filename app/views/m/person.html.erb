@@ -1,0 +1,57 @@
+<% content_for :title do %>
+<%= @person.name(true) %>
+<% end %>
+<% content_for :page_head do %>
+<%= @person.name(false) %>
+<% end %>
+<div style="margin-bottom: 10px"></div>
+<div class="infosection">
+<div class="infobox">
+<ul class="pageitem">
+  <li class="textbox">
+<% if WikipediaFetcher.image(@person) -%>
+<a href="<%= url_for(:action => :image_view, :type => :person, :object_id => @person.id) %>">
+<div id="infoimage" class="infoimage"><%= image_tag WikipediaFetcher.image(@person), :onerror => "image_loading_error(\"#{escape_javascript(link_to_resetexternal(@person.id, "person", true))}\");" %></div>
+</a>
+<% else -%>
+<a href="<%= url_for(:action => :image_view, :type => :person, :object_id => @person.id) %>">
+<div id="infoimage"
+     class="infoimage ajax_wikipedia_image"
+     url="<%= url_for(:controller => :person, :action => :image, :id => @person.id) %>"
+     update="infoimage"></div>
+</a>
+<% end -%>
+     <% if !@birth.blank? %>
+     <span class="header">Date of birth</span>
+     <p><%= @birth %></p>
+     <% end %>
+     <% if !@age.blank? %>
+     <span class="header">Age</span>
+     <p><%= distance_of_time_in_words(*@age) %></p>
+     <% end %>
+     <% if !@death.blank? %>
+     <span class="header">Date of death</span>
+     <p><%= @death %></p>
+     <% end %>
+     <% if !@realname.blank? %>
+     <span class="header">Birth name</span>
+     <p><%= @realname %></p>
+     <% end %>
+  </li>
+</ul>
+</div>
+</div>
+<div class="clear"></div>
+<form id="page_selector">
+<ul class="pageitem">
+  <li class="select">
+    <select id="page_select" name="page" current_page="<%= @page %>">
+      <% for vpage in @valid %>
+        <option value="<%= vpage[0] %>"><%= vpage[1] %></option>
+      <% end %>
+    </select>
+    <span class="arrow"></span>
+  </li>
+</ul>
+</form>
+<%= render :partial => "person_#{@page_to_render}" %>

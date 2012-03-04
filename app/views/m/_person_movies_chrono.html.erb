@@ -1,0 +1,37 @@
+<ul class="pageitem">
+<% for movie_row in @movie_list %>
+<% movie = movie_row %>
+<% movie = movie_row.movie if movie_row.class != Movie %>
+<li class="menu">
+  <a href="<%= url_for(:action => :movie, :id => movie.id) %>">
+    <span class="name"><%= movie.display %>
+    <% if !movie.active_episodes.blank? -%>
+    (<%= pluralize(movie.active_episodes.size, "episode") %>)
+    <% end -%>
+    </span>
+    <% if movie_row.class == Occupation -%>
+    <span class="comment"><%= movie_row.display %></span>
+    <% elsif !movie.occupation(@person).blank? %>
+    <span class="comment"><%= movie.occupation(@person).display %></span>
+    <% end %>
+    <span class="arrow"></span>
+  </a>
+  </li>
+  <% if !movie.active_episodes.empty? %>
+  <li class="textbox">
+  <ul class="pageitem">
+  <% movie.active_episodes.each_with_index do |active_ep,i|
+       extra = " hidden hidden_id_#{movie.id}" if i >= 5 -%>
+    <li class="menu">
+      <a href="<%= url_for(:action => :movie, :id => active_ep[:episode].id) %>">
+      <span class="name"><%= active_ep[:episode].episode_display %></span>
+      <span class="comment"><%= active_ep[:occupation].display %></span>
+      <span class="arrow"></span>
+      </a>
+    </li>
+  <% end %>
+  </ul>
+  </li>
+  <% end %>
+<% end %>
+</ul>

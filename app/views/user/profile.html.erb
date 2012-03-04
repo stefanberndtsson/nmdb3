@@ -1,0 +1,16 @@
+<%= render :partial => 'head', :locals => { :title => "Profile" } %>
+<h2>User info</h2>
+<p>
+  <b>Display name:</b> <%= @user.name %><br/>
+  <b>Username:</b> <%= @user.username %><br/>
+  <b>API-key:</b> <%= false ? @user.api_key : "Unused for now" %>
+</p>
+
+<h2>Statistics</h2>
+<p>
+  <b>Seen movies:</b> <%= @user.get_data_count("seen") %><br/>
+  <b>Owned movies:</b> <%= @user.get_data_count("owns") %><br/>
+  <b>Movies on wishlist:</b> <%= @user.get_data_count("wish") %><br/>
+  <b>Movies marked with errors:</b> <%= @user.get_data_count("error") %><br/>
+</p>
+

@@ -1,0 +1,84 @@
+<div class="facets">
+  <div class="facet_inner">
+    <% if @partial_facets -%>
+    <h2>Partial Title refinement</h2>
+    <% else -%>
+    <h2>Title refinement</h2>
+    <% end -%>
+    <% for filter in @param_filters -%>
+    <% local_filter = @param_filters.clone -%>
+    <% local_filter.delete(filter) -%>
+    <%= active_filter(filter) %>&nbsp;[<%= 
+                                          link_to "remove",
+                                          :action => :result,
+    :source => @source,
+    :query => @query,
+    :filters => local_filter
+    %>]<br/>
+    <% end -%>
+    <% local_filters = @param_filters.clone -%>
+    <% local_filters.delete_if { |x| x[:attribute] == "year_attr" } -%>
+    <h3>year</h3>
+    <div id="year_range"></div>
+    <div>Year between <a id="year_link" href=""></a></div>
+    <%= hidden_field_tag "year_min", @year_min %>
+    <%= hidden_field_tag "year_max", @year_max %>
+    <%= hidden_field_tag "facet_year_min", @facet_year_min %>
+    <%= hidden_field_tag "facet_year_max", @facet_year_max %>
+    <%= link_to "Set", {:action => :result, :query => @query,
+                        :source => @source,
+                        :filters => local_filters + 
+                          [{:attribute => "year_attr", 
+                            :values => ["@@@REPLACE_RANGE@@@"], 
+                            :exclude => false}]},
+                       {:id => "year_link_template"} %>
+    <% local_filters = @param_filters.clone -%>
+    <% local_filters.delete_if { |x| x[:attribute] == "rating" } -%>
+    <h3>rating</h3>
+    <div id="rating_range"></div>
+    <div>Rating between <a id="rating_link" href=""></a></div>
+    <%= hidden_field_tag "rating_min", @rating_min %>
+    <%= hidden_field_tag "rating_max", @rating_max %>
+    <%= hidden_field_tag "facet_rating_min", @facet_rating_min %>
+    <%= hidden_field_tag "facet_rating_max", @facet_rating_max %>
+    <%= link_to "Set", {:action => :result, :query => @query,
+                        :source => @source,
+                        :filters => local_filters + 
+                          [{:attribute => "rating", 
+                            :values => ["@@@REPLACE_RANGE@@@"], 
+                            :exclude => false}]},
+                       {:id => "rating_link_template"} %>
+    <% for facet_key in @facets.keys.sort -%>
+    <% next if facet_key == "year" -%>
+    <% next if facet_key == "rating" -%>
+    <% if @facets[facet_key].length > 1 -%>
+    <h3><%= facet_key %></h3>
+    <ul>
+      <% for facet in @facets[facet_key] -%>
+      <li><%= link_to facet_presentation(facet_key, facet[0]),
+              :action => :result, :query => @query,
+        :source => @source,
+        :filters => @param_filters + [{:attribute => facet_attribute(facet_key),
+        :values => facet_values(facet_key, facet[0]),
+        :exclude => false
+        }]
+        %> 
+	<% if @partial_facets -%>
+	(ca. <%= ca_count(@results[:movies_count],facet[1]) %>) 
+	<% else -%>
+	(<%= facet[1] %>) 
+	<% end -%>
+	[<%= link_to "exclude",
+                                  :action => :result, :query => @query,
+        :source => @source,
+        :filters => @param_filters + [{:attribute => facet_attribute(facet_key),
+        :values => facet_values(facet_key, facet[0]),
+        :exclude => true
+        }]
+        %>]</li>
+      <% end -%>
+    </ul>
+    <% end -%>
+    <% end -%>
+  </div>
+</div>

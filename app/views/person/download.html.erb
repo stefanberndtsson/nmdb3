@@ -1,0 +1,11 @@
+<%= render :partial => 'head' %>
+<h2>Download</h2>
+<ul>
+  <li>
+    Complete
+    <%= link_to_page("XML", :person, :index, @person.id, :format => :xml) %>
+    or
+    <%= link_to_page("JSON", :person, :index, @person.id, :format => :json) %>
+    for <%= @person.name(true) %>
+  </li>
+</ul>

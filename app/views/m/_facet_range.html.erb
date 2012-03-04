@@ -1,0 +1,45 @@
+<% if params["facet_#{@facet_type}"] %>
+<ul class="pageitem">
+  <li class="textbox">
+    <span class="header center">Active selection</span>
+  </li>
+  <li class="filter">
+    <span class="name">
+    <% if @facet_type == "rating" %>
+    <%= @facet_names[@facet_type] %>: <%= params["facet_#{@facet_type}"]["from"].to_i/10.0 %> to <%= params["facet_#{@facet_type}"]["to"].to_i/10.0 %>
+    <% else %>
+    <%= @facet_names[@facet_type] %>: <%= params["facet_#{@facet_type}"]["from"] %> to <%= params["facet_#{@facet_type}"]["to"] %>
+    <% end %>
+    </span>
+  </li>
+  <li class="button">
+    <%= submit_tag "Reset active selection" %>
+    <%= hidden_field_tag "last_facet_selection", @facet_type %>
+  </li>
+</ul>
+<% end %>
+
+<ul class="pageitem">
+  <li class="textbox"><span class="header center">From <%= @facet_names[@facet_type] %></span></li>
+  <li class="select">
+    <select name="facet_<%= @facet_type %>[from]" class="center">
+      <% for value in @facet_values %>
+      <% selected="" %>
+      <% selected=" selected=\"selected\"" if value[0] == @facet_min_value.to_i %>
+        <option value="<%= value[0] %>"<%= selected %>><%= value[1] %></option>
+      <% end %>
+    </select>
+    <span class="arrow"></span>
+  </li>
+  <li class="textbox"><span class="header center">To <%= @facet_names[@facet_type] %></span></li>
+  <li class="select">
+    <select name="facet_<%= @facet_type %>[to]" class="center">
+      <% for value in @facet_values %>
+      <% selected="" %>
+      <% selected=" selected=\"selected\"" if value[0] == @facet_max_value.to_i %>
+        <option value="<%= value[0] %>"<%= selected %>><%= value[1] %></option>
+      <% end %>
+    </select>
+    <span class="arrow"></span>
+  </li>
+</ul>

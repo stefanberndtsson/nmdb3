@@ -1,0 +1,14 @@
+<%= render :partial => 'head' %>
+<h2>Alternate versions</h2>
+<% for version in @movie.alternate_versions.find_all_by_parent_id(nil) -%>
+<ul>
+  <li><%= decode_links(version.alternate_version) %></li>
+  <% if !version.versions.empty? -%>
+  <ul style="margin-top: 10px;">
+    <% for subversion in version.versions -%>
+    <li><%= subversion.alternate_version %></li>
+    <% end -%>
+  </ul>
+  <% end -%>
+</ul>
+<% end -%>

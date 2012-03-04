@@ -1,0 +1,12 @@
+<table class="summary">
+  <% rows.each_with_index do |row,i| -%>
+  <tr>
+    <% if i == 0 -%>
+    <th><%= heading %></th>
+    <% else -%>
+    <th></th>
+    <% end -%>
+    <td><%= row %></td>
+  </tr>
+  <% end -%>
+</table>

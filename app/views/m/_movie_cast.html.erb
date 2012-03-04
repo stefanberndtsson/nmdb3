@@ -1,0 +1,16 @@
+<ul class="pageitem">
+<% for cast in @movie.cast %>
+<li class="menu">
+  <a href="<%= url_for(:action => :person, :id => cast.person.id) %>">
+  <span class="name">
+    <%= cast.person.name %>
+    <% if cast.collected %>
+    (<%= pluralize(cast.episode_count, "episode") %>)
+    <% end %>
+  </span>
+  <span class="comment"><%= cast.display %></span>
+  <span class="arrow"></span>
+  </a>
+</li>
+<% end %>
+</ul>

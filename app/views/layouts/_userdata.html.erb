@@ -1,0 +1,13 @@
+<div id="userdata">
+  <% if current_user -%>
+  <span class="name"><%= current_user.name %></span> | 
+  <span class="link"><%= link_to_profile %></span> | 
+  <span class="link"><%= link_to_logout %></span>
+  <% if current_user.admin %>
+  | <span class="link"><%= link_to_resetexternal(params[:id], params[:controller]) %></span>
+  <% end %>
+  <% else -%>
+  <span class="link"><%= link_to_login %></span> | 
+  <span class="link"><%= link_to_register %></span>
+  <% end -%>
+</div>

@@ -1,0 +1,8 @@
+<% for plot in @movie.plots %>
+<ul class="pageitem">
+  <li class="textbox">
+    <p><%= decode_links(plot.plot, :mobile) %></p>
+    <p><i><%= plot.author %></i></p>
+  </li>
+</ul>
+<% end %>

@@ -1,0 +1,339 @@
+class Person < ActiveRecord::Base
+  has_many :occupations
+  has_many :movies, :through => :occupations
+  has_many :aka_names
+  has_many :person_metadata
+  attr_accessor :score
+  
+  def name(include_count = false)
+    output = [first_name, last_name]
+    output << "(#{name_count})" if include_count && name_count
+    output.join(" ")
+  end
+  
+  def date_of_birth
+    db = person_metadata.find_by_key("DB")
+    return nil if !db
+    db.value
+  end
+  
+  def date_of_death
+    dd = person_metadata.find_by_key("DD")
+    return nil if !dd
+    dd.value
+  end
+  
+  def stamp_of_birth
+    db = date_of_birth
+    return nil if !db
+    
+    if db[/^(\d{4}),/]
+      return Time.parse("#{$1}-07-01")
+    end
+    
+    begin
+      return Time.parse(db)
+    rescue
+      return nil
+    end
+  end
+  
+  def stamp_of_death
+    dd = date_of_death
+    return nil if !dd
+    
+    if dd[/^(\d{4}),/]
+      return Time.parse("#{$1}-07-01")
+    end
+    
+    begin
+      return Time.parse(dd)
+    rescue
+      return nil
+    end
+  end
+
+  def age
+    birth = stamp_of_birth
+    return if !birth
+    
+    death = stamp_of_death
+    if !death
+      death = Time.now
+    end
+    [birth, death]
+  end    
+  
+  def birth_name
+    bn = person_metadata.find_by_key("RN")
+    return nil if !bn
+    bn.value
+  end
+
+  def movies_base
+    occupations.
+      joins(:role).
+      joins(:movie).
+      includes(:movie).
+      includes(:movie => :main).
+      includes(:movie => :movie_akas).
+      where(:movies => { :suspended => nil }).
+      order("movies.full_year DESC")
+  end
+  
+  def movies_as_role_group(group_name)
+    movies_base.where(:roles => { :group => group_name })
+  end
+  
+  def movies_as_role(role_name)
+    movies_base.where(:roles => { :role => role_name })
+  end
+  
+  def movies_as_cast
+    return @cache if @cache
+    movies = movies_as_role_group(Role::GROUP_CAST)
+    @cache ||= compress_episode_data(movies)
+  end
+
+  def new_compress_episode_data(movies)
+    grouped = movies.group_by { |x| x.movie.main }
+    non_episodes = grouped.delete(nil)
+    non_episodes.delete_if { |x| grouped.keys.include?(x) }
+    grouped.keys.each do |ep_main_key|
+      grouped[ep_main_key].each { |x| ep_main_key.add_active_episode(x.movie, x) }
+    end
+    
+    movies = non_episodes + grouped.keys
+    
+    movies.sort_by do |movie|
+      movie.class == Movie ? -movie.full_year.to_i : -movie.movie.full_year.to_i
+    end
+  end
+  
+  def compress_episode_data(movies)
+    episodes = movies.select { |x| x.movie.is_episode }
+    non_episodes = movies.select { |x| !x.movie.is_episode }
+    episode_mains = episodes.map { |x| [x.movie.main, x] }.group_by { |x| x[0] }
+    non_episodes.each do |non_ep|
+      episode_mains.keys.each do |ep_main_key|
+        if ep_main_key == non_ep
+          episode_mains[ep_main_key][0].each { |x| non_ep.movie.add_active_episode(x.movie, x) }
+          episode_mains.delete(ep_main_key)
+        end
+      end
+    end
+    episode_mains.keys.each do |ep_main_key|
+      episode_mains[ep_main_key].each { |x| ep_main_key.add_active_episode(x[1].movie, x[1]) }
+      non_episodes.delete_if { |x| x.movie_id == ep_main_key.id }
+    end
+    
+    movies = non_episodes + episode_mains.keys
+    
+    movies.sort_by do |movie|
+      movie.class == Movie ? -movie.full_year.to_i : -movie.movie.full_year.to_i
+    end
+  end
+  
+  def movies_as_primary_cast
+    movies_as_cast - movies_as_self - movies_as_archive
+  end
+  
+  def movies_as_self
+    movies_as_cast.select do |movie|
+      ((movie.class == Occupation &&
+        movie.character &&
+        movie.character.match(/(himself|herself|themselves)/i)) || 
+       (movie.class == Movie && 
+        !movie.active_episodes.blank? && 
+        movie.active_episodes[0][:occupation] && 
+        movie.active_episodes[0][:occupation].character && 
+        movie.active_episodes[0][:occupation].character.match(/(himself|herself|themselves)/i)))
+    end
+  end
+  
+  def movies_as_archive
+    movies_as_cast.select do |movie|
+      ((movie.class == Occupation &&
+        movie.extras &&
+        movie.extras.match(/(archive footage)/i)) || 
+       (movie.class == Movie && 
+        !movie.active_episodes.blank? && 
+        movie.active_episodes[0][:occupation] && 
+        movie.active_episodes[0][:occupation].extras && 
+        movie.active_episodes[0][:occupation].extras.match(/(archive footage)/i)))
+    end
+  end
+
+  def movies_as_section(section_name)
+    if ["producer", "director", "writer", "composer"].include?(section_name)
+      return movies_as_role(section_name)
+    end
+    return movies_as_self if section_name == "self"
+    return movies_as_archive if section_name == "archive"
+    return movies_as_primary_cast if !section_name
+  end
+
+  def movies_by_genre
+    genres = { }
+    movies_as_role_group(Role::GROUP_CAST).each do |movie|
+      movie.movie.genres.each do |genre|
+        genres[genre] ||= []
+        genres[genre] << movie
+      end
+    end
+    genres.keys.each do |key|
+      genres[key] = compress_episode_data(genres[key])
+    end
+    genres
+  end
+  
+  def movies_by_keyword
+    keywords = { }
+    movies_as_role_group(Role::GROUP_CAST).each do |movie|
+      movie.movie.keywords.each do |keyword|
+        keywords[keyword] ||= []
+        keywords[keyword] << movie
+      end
+    end
+    keywords.keys.each do |key|
+      keywords[key] = compress_episode_data(keywords[key])
+    end
+    keywords
+  end
+
+  def movies_by_weight(limit = nil, skip_occupation = false)
+    person_filter = Riddle::Client::Filter.new("cast_ids", [self.id], false)
+    result = Search.query("@cast \"#{self.name}\"", "movies", [person_filter], limit || self.movies.count)
+    return [] if !result && !result[0] && !result[0][:movies]
+    if limit
+      if skip_occupation
+        return result[0][:movies][0..limit-1]
+      else
+        return result[0][:movies][0..limit-1].map { |x| x.occupation(self) }
+      end
+    end
+    movie_ids = result[0][:movies].map(&:id)
+    sort_value = { }
+    result[0][:movies].each_with_index { |x,i| sort_value[x.id] = i }
+    tmp = occupations.joins(:role).
+      where(:movie_id => movies_base.select(:movie_id).map(&:movie_id)).
+      where(:roles => { :group => Role::GROUP_CAST }).sort_by { |x| sort_value[x.movie_id] }
+    return tmp
+  end
+  
+  def section_heading(section_name)
+    if !section_name
+      return gender == Role::GENDER_FEMALE ? "actress" : "actor"
+    end
+    return section_name
+  end
+  
+  def gender
+    movies_as_role_group(Role::GROUP_CAST).first.role_id
+  end
+  
+  def has_metadata_page?(page)
+    !person_metadata.find_all_by_key(PersonMetadatum.pages[page][:keys]).empty?
+  end
+
+  def serialize_complete_options(options = { })
+    default_options = {
+      :skip_types => true,
+      :include => {
+        :person_metadata => { },
+        :aka_names => { },
+        :occupations => {
+          :include => {
+            :movie => { },
+            :role => { }
+          }
+        }
+      }
+    }
+    
+    default_options.merge(options)
+  end
+  
+  def to_complete_xml(options = { })
+    to_xml(serialize_complete_options(options))
+  end
+  
+  def to_complete_json(options = { })
+    to_json(serialize_complete_options(options))
+  end
+
+  def wikipedia_query_list
+    list = []
+    list << name
+    aka_names.each do |akan|
+      list << akan.name
+    end
+    list2 = []
+    list.each do |item|
+      list2 << item
+      wikipedia_query_addons.each do |addon|
+        list2 << "#{item} (#{addon})"
+      end
+    end
+    
+    list2.uniq
+  end
+
+  def wikipedia_query_addons
+    addons = []
+    addons << "author"
+    addons << (gender == Role::GENDER_FEMALE ? "actress" : "actor")
+    addons << (gender == Role::GENDER_FEMALE ? "pornographic actress" : "pornographic actor")
+    addons << "person"
+    addons
+  end
+
+  def wikipedia_opensearch_list
+    []
+  end
+  
+  def wikipedia_fetching_object
+    self
+  end
+  
+  def query_source(simple = false)
+    simple ? "people-simple" : "biography"
+  end
+  
+  def cache_prefix
+    "person:#{id.to_s}:"
+  end
+  
+  def is_game?
+    false
+  end
+
+  def image_url
+    return RCache.get("person:#{id}:wikipedia:image")
+  end
+  
+  def valid_mobile_pages
+    pages = [["movies_by_weight", "Movies Weighted"]]
+    pages << ["movies_primary_cast", "Movies Chronologically"] if !movies_as_primary_cast.blank?
+    pages << ["movies_self", "Movies as Theirself"] if !movies_as_self.blank?
+    pages << ["movies_archive", "Movies as Archive footage"] if !movies_as_archive.blank?
+    pages << ["movies_producer", "Movies as Producer"] if !movies_as_section("producer").blank?
+    pages << ["movies_director", "Movies as Director"] if !movies_as_section("director").blank?
+    pages << ["movies_writer", "Movies as Writer"] if !movies_as_section("writer").blank?
+    pages << ["movies_composer", "Movies as Composer"] if !movies_as_section("composer").blank?
+    pages << ["biography", "Biography"] if has_metadata_page?("biography")
+    pages << ["trivia", "Trivia"] if has_metadata_page?("trivia")
+    pages << ["quotes", "Quotes"] if has_metadata_page?("quotes")
+    pages << ["publicity", "Publicity"] if has_metadata_page?("publicity")
+    pages << ["other_works", "Other Works"] if has_metadata_page?("other_works")
+    pages
+  end
+  
+  def episode_count(movie)
+    occs = occupations.joins(:role).
+      where(:movie_id => movie.id).
+      where(:roles => { :group => Role::GROUP_CAST }).
+      where(:collected => true)
+    (occs.count > 0) ? occs.first.episode_count : nil
+  end
+end

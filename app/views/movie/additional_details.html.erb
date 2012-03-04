@@ -1,0 +1,27 @@
+<%= render :partial => 'head' %>
+<h2>Additional details</h2>
+<% if !@movie.movie_akas.empty? -%>
+<%= display_original_title(@movie, true) %>
+<% end -%>
+<%= display_aka_titles(@movie) %>
+
+<%= display_crew("Producers", @movie, "producer") %>
+<%= display_crew("Directors", @movie, "director") %>
+<%= display_crew("Writers", @movie, "writer") %>
+<%= display_running_times(@movie) %>
+<%= display_languages(@movie) %>
+<%= display_aspect_ratio(@movie) %>
+<%= display_color_infos(@movie) %>
+
+<% if !@movie.certificates.empty? -%>
+<h3>Certifications</h3>
+<table>
+<% for cert in @movie.certificates.sort_by {|x| x.country} -%>
+<tr>
+  <th align="right"><%= cert.country %>: </th>
+  <td><%= cert.certificate %></td>
+  <td><%= cert.info %></td>
+</tr>
+<% end -%>
+</table>
+<% end -%>
