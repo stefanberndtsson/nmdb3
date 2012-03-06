@@ -206,15 +206,15 @@ class Movie < ActiveRecord::Base
   
   def episodes_sorted
     return nil if is_episode
-    episodes.sort_by { |x| [x.episode_sort, x.first_release_date && x.first_release_date.release_stamp.to_i ] }
+    episodes.sort_by { |x| x.episode_sort }
   end
   
   def episode_index
-    main.episodes.sort_by { |x| [x.episode_sort, x.first_release_date && x.first_release_date.release_stamp.to_i ] }.index(self)
+    main.episodes.sort_by { |x| x.episode_sort }.index(self)
   end
   
   def episode_sort
-    [episode_season || 0, episode_episode || 0]
+    [episode_season || 0, episode_episode || 0, episode_sort_value || 0]
   end
   
   def category
