@@ -214,7 +214,7 @@ class Movie < ActiveRecord::Base
   end
   
   def episode_sort
-    [episode_season || 0, episode_episode || 0, episode_sort_value || 0]
+    [episode_season || 0, episode_episode || 0, movie_sort_value || 0]
   end
   
   def category
@@ -234,7 +234,7 @@ class Movie < ActiveRecord::Base
     end
     return nil if selected.empty?
     selected.sort_by do |x|
-      [x.linked_movie.title_year == "????" ? 99999 : x.linked_movie.title_year.to_i, (x.linked_movie.first_release_date || 0).to_i]
+      [x.linked_movie.title_year == "????" ? 99999 : x.linked_movie.title_year.to_i, (x.linked_movie.movie_sort_value || 0)]
     end.first.linked_movie
   end
   
@@ -247,7 +247,7 @@ class Movie < ActiveRecord::Base
     end
     return nil if selected.empty?
     selected.sort_by do |x|
-      [-(x.linked_movie.title_year == "????" ? 99999 : x.linked_movie.title_year.to_i), -(x.linked_movie.first_release_date || 0).to_i]
+      [-(x.linked_movie.title_year == "????" ? 99999 : x.linked_movie.title_year.to_i), -(x.linked_movie.movie_sort_value || 0)]
     end.first.linked_movie
   end
   
