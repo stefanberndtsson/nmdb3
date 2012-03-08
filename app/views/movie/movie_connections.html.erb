@@ -23,7 +23,7 @@
   <% end -%>
 </ul>
 <hr/>
-<a href="http://www.imdb.com/title/tt<%= @movie.imdbid %>/movieconnections">To IMDB</a>
+<a href="http://www.imdb.com/title/<%= @movie.imdbid %>/movieconnections">To IMDB</a>
 <hr/>
 <% end -%>
 <% for type in @mcon.keys.sort_by {|x| MovieConnectionType.find_by_connection_type(x).sort_order } -%>

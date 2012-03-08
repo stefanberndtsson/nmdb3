@@ -713,7 +713,7 @@ class Movie < ActiveRecord::Base
   end
   
   def imdbid
-    @imdbid = RCache.get("movie:#{self.id}:imdb:id")
+    @imdbid = imdb_id
     if !@imdbid
       begin
         isotitle = Iconv.conv("iso-8859-1", "utf-8", full_title)
@@ -722,12 +722,9 @@ class Movie < ActiveRecord::Base
       end
       res = Net::HTTP.post_form(URI.parse(IMDB_URL), { :s => "tt", :q => isotitle })
       return nil if !res["location"]
-      @imdbid = res["location"].scan(/\/title\/tt(\d+)\//).first.first
+      @imdbid = res["location"].scan(/\/title\/(tt\d+)\//).first.first
       return nil if @imdbid.blank?
-      RCache.set("movie:#{self.id}:imdb:id", @imdbid)
-      RCache.set("imdb_movie:#{@imdbid}:movie:id", self.id, nil)
-    else
-      RCache.set("imdb_movie:#{@imdbid}:movie:id", self.id, nil)
+      update_attribute(:imdb_id, @imdbid)
     end
     @imdbid
   end
@@ -741,7 +738,7 @@ class Movie < ActiveRecord::Base
       headers = {
         "Accept-Language" => "en-us,en;q=0.5",
       }
-      io = open(IMDB_BASE+"title/tt#{@imdbid}/"+page, headers)
+      io = open(IMDB_BASE+"title/#{@imdbid}/"+page, headers)
       page_data = io.read
       doc = Nokogiri::HTML(page_data)
       content = doc.search("#tn15content")
@@ -809,7 +806,7 @@ class Movie < ActiveRecord::Base
           next
         end
 
-        if last_category && line[/<a href=\"\/title\/tt(\d+)\/\">([^<]+)<\/a>(| \((\d{4}[\/IVX]*)\)| \((\d{4}[\/IVX]*)\) \((V|TV|VG)\))$/]
+        if last_category && line[/<a href=\"\/title\/(tt\d+)\/\">([^<]+)<\/a>(| \((\d{4}[\/IVX]*)\)| \((\d{4}[\/IVX]*)\) \((V|TV|VG)\))$/]
           got_connection = nil
           imdbid = $1
           imdb_title = CGI.unescapeHTML($2)
@@ -896,14 +893,11 @@ class Movie < ActiveRecord::Base
   end
   
   def matches_movie(imdbid, imdb_title, imdb_year, imdb_type, last_category)
-#    movie_id = RCache.get("imdb_movie:#{imdbid}:movie:id")
-#    return [movie_id, last_category] if movie_id
     iyear = " (#{imdb_year})"
     extras = imdb_type ? " (#{imdb_type})" : ""
     full_imdb_title = "#{imdb_title}#{iyear}#{extras}"
     if @mcs[[full_imdb_title, last_category]]
-      RCache.set("movie:#{@mcs[[full_imdb_title, last_category]]}:imdb:id", imdbid, nil)
-      RCache.set("imdb_movie:#{imdbid}:movie:id", @mcs[[full_imdb_title, last_category]], nil)
+      update_attribute(:imdb_id, imdbid)
       return @mcs[[full_imdb_title, last_category]]
     end
     if @mcs[[imdb_title, last_category]]
