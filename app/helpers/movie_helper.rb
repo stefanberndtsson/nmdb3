@@ -16,7 +16,7 @@ module MovieHelper
     list << { :action => :taglines, :linked => !movie.taglines.empty? }
     list << { :action => :quotes, :linked => !movie.quotes.empty? }
     list << { :action => :similar, :linked => movie.has_similar? }
-    list << { :action => :images, :linked => movie.has_images? }
+    list << { :action => :images, :linked => movie.has_images?(current_user) }
     list << { :action => :download, :linked => true }
     list << { :action => :external_links, :linked => true }
     list

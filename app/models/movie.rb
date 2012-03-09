@@ -987,8 +987,12 @@ class Movie < ActiveRecord::Base
     end
   end
   
-  def has_images?
-    tmdb_images && !(tmdb_images["backdrops"].blank? || tmdb_images["posters"].blank?)
+  def has_images?(user = nil)
+    return false if !(tmdb_images && !(tmdb_images["backdrops"].blank? || tmdb_images["posters"].blank?))
+    info = tmdb_info
+    return false if !info
+    return false if info["adult"] && !user
+    return true
   end
   
   def tmdb_images
