@@ -341,6 +341,7 @@ class Person < ActiveRecord::Base
   
   def has_images?(user = nil)
     return false if !(tmdb_images(user) && !(tmdb_images(user)["profiles"].blank?))
+    return false if tmdb_images(user)["profiles"].size <= 1
     info = tmdb_info(user)
     return false if !info
     return false if info["adult"] && !user
