@@ -9,7 +9,9 @@
 <%= stylesheet_link_tag "common" %>
 <% end -%>
 <% content_for :image do -%>
-<% if WikipediaFetcher.image(@person) -%>
+<% if @person.tmdb_main_profile(current_user) %>
+<div id="person_image"><%= image_tag @person.tmdb_main_profile(current_user) %></div>
+<% elsif WikipediaFetcher.image(@person) -%>
 <div id="person_image"><%= image_tag WikipediaFetcher.image(@person), :onerror => "image_loading_error(\"#{escape_javascript(link_to_resetexternal(@person.id, "person", true))}\");" %></div>
 <% else -%>
 <div id="person_image"

@@ -1,4 +1,6 @@
 class Person < ActiveRecord::Base
+  TMDB_KEY=Rails.application.config.themoviedb_key if Rails.application.config.respond_to?("themoviedb_key")
+  TMDB_API_URL="http://api.themoviedb.org/3"
   has_many :occupations
   has_many :movies, :through => :occupations
   has_many :aka_names
@@ -335,5 +337,204 @@ class Person < ActiveRecord::Base
       where(:roles => { :group => Role::GROUP_CAST }).
       where(:collected => true)
     (occs.count > 0) ? occs.first.episode_count : nil
+  end
+  
+  def has_images?(user = nil)
+    return false if !(tmdb_images && !(tmdb_images["backdrops"].blank? || tmdb_images["posters"].blank?))
+    info = tmdb_info
+    return false if !info
+    return false if info["adult"] && !user
+    return true
+  end
+  
+  def tmdb_find(user = nil)
+    return nil if !defined?(TMDB_KEY)
+    info = RCache.get(cache_prefix+"tmdb:info")
+    if !info.blank?
+      info = JSON.parse(info)
+      return nil if !user && info["adult"]
+      return info
+    end
+    result = nil
+    begin
+      open(tmdb_find_url(user)) do |file|
+        json = file.read
+        result = JSON.parse(json)
+      end
+    rescue
+      RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
+      return nil
+    end
+    if result.blank? || result["results"].blank?
+      RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
+      return nil
+    end
+
+    result["results"].each do |res|
+      if tmdb_valid?(res["id"])
+        if !user && res["adult"]
+          RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
+          return nil
+        end
+        info = tmdb_info(res["id"])
+        return info
+      end
+    end
+    RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
+    return nil
+  end
+  
+  def tmdb_find_url(user = nil)
+    adult = ""
+    if user
+      adult = "include_adult=true&"
+    end
+    TMDB_API_URL+"/search/person?#{adult}api_key="+TMDB_KEY+"&query="+CGI.escape(name_norm)
+  end
+  
+  def tmdb_images(user = nil)
+    return nil if !defined?(TMDB_KEY)
+    info = RCache.get(cache_prefix+"tmdb:info")
+    return nil if !user && info && info["adult"]
+    images = RCache.get(cache_prefix+"tmdb:images")
+    return JSON.parse(images) if !images.blank?
+    info = tmdb_find(user)
+    return nil if info.blank?
+    begin
+      open(tmdb_info_url(info["id"], "images", user)) do |file|
+        json = file.read
+        RCache.set(cache_prefix+"tmdb:images", json, 10.days)
+        return JSON.parse(json)
+      end
+    rescue
+      RCache.set(cache_prefix+"tmdb:images", "", 1.hour)
+      return nil
+    end
+  end
+  
+  def tmdb_info(tmdb_id, section = nil)
+    return nil if !defined?(TMDB_KEY)
+    info = RCache.get(cache_prefix+"tmdb:info")
+    return JSON.parse(info) if !info.blank?
+    begin
+      open(tmdb_info_url(tmdb_id, section)) do |file|
+        json = file.read
+        RCache.set(cache_prefix+"tmdb:info", json, 10.days) if !section
+        return JSON.parse(json)
+      end
+    rescue
+      RCache.set(cache_prefix+"tmdb:info", "", 1.hour) if !section
+      return nil
+    end
+  end
+  
+  def tmdb_main_profile(user = nil, cache_only = false)
+    info = RCache.get(cache_prefix+"tmdb:info")
+    return nil if !user && info && info["adult"]
+    if cache_only
+      return nil if !user && info.blank?
+      url = RCache.get(cache_prefix+"tmdb:main_profile:noexpire")
+      return url if !url.blank?
+      return nil
+    end
+    url = RCache.get(cache_prefix+"tmdb:main_profile")
+    return url if !url.blank?
+    info = tmdb_find(user)
+    if info.blank? || info["profile_path"].blank?
+      RCache.set(cache_prefix+"tmdb:main_profile", "", 1.hour)
+      return nil
+    end
+    url = tmdb_image_url(info["profile_path"], "large")
+    RCache.set(cache_prefix+"tmdb:main_profile", url, 10.days)
+    RCache.set(cache_prefix+"tmdb:main_profile:noexpire", url, nil)
+    url
+  end
+  
+  def tmdb_info_url(tmdb_id, section = nil, user = nil)
+    section = section ? "/#{section}" : ""
+    adult = ""
+    if user
+      adult = "include_adult=true&"
+    end
+    TMDB_API_URL+"/person/#{tmdb_id}"+section+"?#{adult}api_key="+TMDB_KEY
+  end
+  
+  def tmdb_valid?(tmdb_id)
+    tmp = RCache.get(cache_prefix+"tmdb:id")
+    return true if tmp == tmdb_id.to_s
+    movies = tmdb_info(tmdb_id, "credits")
+    return nil if movies.blank? || movies["cast"].blank?
+
+    movies = movies["cast"].map do |movie|
+      next if movie["release_date"].blank?
+      begin
+        year = Time.parse(movie["release_date"]).year
+      rescue
+        next
+      end
+      tmdb_movie_title_match(
+                       [movie["title"], movie["original_title"]],
+                       self.movies.joins(:movie_years).where(:movie_years => { :year => year.to_s })
+                       )
+    end.compact.reject { |x| x[0]+x[1] > 3 }.map { |x| x[2].id }
+
+    matched_movies = self.movies.where(:id => movies)
+    return false if matched_movies.size <= 1
+    if matched_movies.size.to_f/movies.size.to_f > 0.75
+      RCache.set(cache_prefix+"tmdb:id", tmdb_id.to_s, 10.days)
+      return true
+    end
+    return false
+  end
+
+  def tmdb_movie_title_match(tmdb_titles, nmdb_titles)
+    nmdb_titles.map do |nt|
+      [
+        Levenshtein.distance(nt.title, tmdb_titles.first),
+        Levenshtein.distance(nt.title, tmdb_titles.last),
+        nt
+      ]
+    end.sort_by do |matched|
+      matched[0]+matched[1]
+    end.first
+  end
+  
+  def tmdb_image_url(path, size_string = "thumb")
+    config = tmdb_configuration
+    base_url = config["images"]["base_url"]
+    size = tmdb_image_size(size_string)
+    return base_url+size+path
+  end
+  
+  def tmdb_image_size(size_string = "thumb")
+    config = tmdb_configuration
+    return nil if !config
+    return size_string if size_string == "original"
+    if size_string == "thumb"
+      return config["images"]["profile_sizes"][0]
+    elsif size_string == "large"
+      return config["images"]["profile_sizes"][-2]
+    elsif size_string == "medium"
+      idx = (config["images"]["profile_sizes"].size-1)/2
+      return config["images"]["profile_sizes"][idx]
+    end
+    return nil
+  end
+  
+  def tmdb_configuration
+    return nil if !defined?(TMDB_KEY)
+    @@tmdb_config ||= { }
+    return @@tmdb_config if @@tmdb_config["images"]
+    begin
+      open(tmdb_configuration_url) do |file|
+        @@tmdb_config = JSON.parse(file.read)
+      end
+    rescue
+    end
+    @@tmdb_config
+  end
+  
+  def tmdb_configuration_url
+    TMDB_API_URL+"/configuration?api_key="+TMDB_KEY
   end
 end
