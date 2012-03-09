@@ -1,0 +1,1 @@
+Nmdb3::Application.config.themoviedb_key = '<INSERT KEY HERE>'

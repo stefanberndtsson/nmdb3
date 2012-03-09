@@ -21,7 +21,9 @@
 <%= stylesheet_link_tag "common" %>
 <% end -%>
 <% content_for :image do -%>
-<% if WikipediaFetcher.image(@movie) -%>
+<% if @movie.tmdb_main_poster %>
+<div id="movie_image"><%= image_tag @movie.tmdb_main_poster %></div>
+<% elsif WikipediaFetcher.image(@movie) -%>
 <div id="movie_image"><%= image_tag WikipediaFetcher.image(@movie), :onerror => "image_loading_error(\"#{escape_javascript(link_to_resetexternal(@movie.id, "movie", true))}\");" %></div>
 <% else -%>
 <div id="movie_image"

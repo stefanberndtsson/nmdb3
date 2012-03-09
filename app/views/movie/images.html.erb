@@ -1,0 +1,13 @@
+<%= render :partial => 'head' %>
+<h2>Images</h2>
+<% for image_type in @images.keys.reverse 
+   next if @images[image_type].blank? %>
+  <div>
+  <h3><%= image_type %></h3>
+  <% for image in @images[image_type] %>
+    <span>
+      <%= image_tag @movie.tmdb_image_url(image["file_path"], image_type.singularize, "medium") %>
+    </span>
+  <% end %>
+  </div>
+<% end %>

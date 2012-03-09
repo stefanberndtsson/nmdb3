@@ -21,6 +21,8 @@ end
 class Movie < ActiveRecord::Base
   IMDB_BASE="http://www.imdb.com/"
   IMDB_URL="#{IMDB_BASE}find"
+  TMDB_KEY=Rails.application.config.themoviedb_key if defined?(Rails.application.config.themoviedb_key)
+  TMDB_API_URL="http://api.themoviedb.org/3"
   
   has_many :movie_akas
   has_many :episodes, :foreign_key => :parent_id, :class_name => "Movie"
@@ -713,8 +715,8 @@ class Movie < ActiveRecord::Base
   end
   
   def imdbid
-    @imdbid = imdb_id
-    if !@imdbid
+    tmp_imdbid = imdb_id
+    if !tmp_imdbid
       begin
         isotitle = Iconv.conv("iso-8859-1", "utf-8", full_title)
       rescue
@@ -722,23 +724,22 @@ class Movie < ActiveRecord::Base
       end
       res = Net::HTTP.post_form(URI.parse(IMDB_URL), { :s => "tt", :q => isotitle })
       return nil if !res["location"]
-      @imdbid = res["location"].scan(/\/title\/(tt\d+)\//).first.first
-      return nil if @imdbid.blank?
-      update_attribute(:imdb_id, @imdbid)
+      tmp_imdbid = res["location"].scan(/\/title\/(tt\d+)\//).first.first
+      return nil if tmp_imdbid.blank?
+      update_attribute(:imdb_id, tmp_imdbid)
     end
-    @imdbid
+    tmp_imdbid
   end
   
   def imdb_data(page = "movieconnections")
     cached = RCache.get("movie:#{self.id}:imdb:page_#{page}")
     return cached if cached
-    @imdbid = imdbid
-    return nil if !@imdbid
+    return nil if !imdbid
     begin
       headers = {
         "Accept-Language" => "en-us,en;q=0.5",
       }
-      io = open(IMDB_BASE+"title/#{@imdbid}/"+page, headers)
+      io = open(IMDB_BASE+"title/#{imdbid}/"+page, headers)
       page_data = io.read
       doc = Nokogiri::HTML(page_data)
       content = doc.search("#tn15content")
@@ -808,7 +809,7 @@ class Movie < ActiveRecord::Base
 
         if last_category && line[/<a href=\"\/title\/(tt\d+)\/\">([^<]+)<\/a>(| \((\d{4}[\/IVX]*)\)| \((\d{4}[\/IVX]*)\) \((V|TV|VG)\))$/]
           got_connection = nil
-          imdbid = $1
+          linked_imdbid = $1
           imdb_title = CGI.unescapeHTML($2)
           imdb_type = nil
           imdb_year = nil
@@ -818,17 +819,17 @@ class Movie < ActiveRecord::Base
           else
             imdb_year = $4
           end
-          got_connection = matches_movie(imdbid, imdb_title, imdb_year, imdb_type, last_category)
+          got_connection = matches_movie(linked_imdbid, imdb_title, imdb_year, imdb_type, last_category)
           if got_connection
             unfound.delete([got_connection, last_category])
             RCache.set("movie:#{self.id}:imdb:link_info_#{got_connection}:#{last_category}", "[NONE]", 30.days)
             if second_run || final_run
-              matching = [imdbid, imdb_title, imdb_year, imdb_type, last_category]
+              matching = [linked_imdbid, imdb_title, imdb_year, imdb_type, last_category]
               self.debug_mc_unmatched_undo(matching)
             end
             last_unmatched = nil
           else
-            last_unmatched = [imdbid, imdb_title, imdb_year, imdb_type, last_category]
+            last_unmatched = [linked_imdbid, imdb_title, imdb_year, imdb_type, last_category]
           end
         end
 
@@ -892,13 +893,15 @@ class Movie < ActiveRecord::Base
     nil
   end
   
-  def matches_movie(imdbid, imdb_title, imdb_year, imdb_type, last_category)
+  def matches_movie(linked_imdbid, imdb_title, imdb_year, imdb_type, last_category)
     iyear = " (#{imdb_year})"
     extras = imdb_type ? " (#{imdb_type})" : ""
     full_imdb_title = "#{imdb_title}#{iyear}#{extras}"
     if @mcs[[full_imdb_title, last_category]]
-      update_attribute(:imdb_id, imdbid)
-      return @mcs[[full_imdb_title, last_category]]
+      linked_id = @mcs[[full_imdb_title, last_category]]
+      linked_movie_imdbid = Movie.find(linked_id).imdbid
+#      linked_movie.update_attribute(:imdb_id, linked_imdbid) if !linked_movie.imdb_id
+      return linked_id
     end
     if @mcs[[imdb_title, last_category]]
       return @mcs[[imdb_title, last_category]]
@@ -945,7 +948,10 @@ class Movie < ActiveRecord::Base
     end
   end
   
-  def image_url
+  def image_url(cache_only = false)
+    if tmdb_main_poster(cache_only)
+      return tmdb_main_poster(cache_only)
+    end
     return WikipediaFetcher.image(self)
   end
   
@@ -961,6 +967,7 @@ class Movie < ActiveRecord::Base
     pages << ["soundtrack", "Soundtrack"] if !soundtrack_titles.blank?
     pages << ["quotes", "Quotes"] if !quotes.blank?
     pages << ["similar", "Similar Movies"] if has_similar?
+#    pages << ["images", "Images"] if has_images?
     pages
   end
   
@@ -976,5 +983,104 @@ class Movie < ActiveRecord::Base
     else
       return "Episode of"
     end
+  end
+  
+  def has_images?
+    !!tmdb_images
+  end
+  
+  def tmdb_images
+    return nil if !defined?(TMDB_KEY)
+    images = RCache.get(cache_prefix+"tmdb:images")
+    return JSON.parse(images) if !images.blank?
+    begin
+      open(tmdb_info_url("images")) do |file|
+        json = file.read
+        RCache.set(cache_prefix+"tmdb:images", json, 10.days)
+        return JSON.parse(json)
+      end
+    rescue
+      RCache.set(cache_prefix+"tmdb:images", "", 10.days)
+      return nil
+    end
+  end
+  
+  def tmdb_info
+    return nil if !defined?(TMDB_KEY)
+    info = RCache.get(cache_prefix+"tmdb:info")
+    return JSON.parse(info) if !info.blank?
+    begin
+      open(tmdb_info_url) do |file|
+        json = file.read
+        RCache.set(cache_prefix+"tmdb:info", json, 10.days)
+        return JSON.parse(json)
+      end
+    rescue
+      RCache.set(cache_prefix+"tmdb:info", "", 10.days)
+      return nil
+    end
+  end
+  
+  def tmdb_main_poster(cache_only = false)
+    if cache_only
+      url = RCache.get(cache_prefix+"tmdb:main_poster:noexpire")
+      return url if !url.blank?
+      return nil
+    end
+    url = RCache.get(cache_prefix+"tmdb:main_poster")
+    return url if !url.blank?
+    info = tmdb_info
+    if info.blank? || !info["poster_path"]
+      RCache.set(cache_prefix+"tmdb:main_poster", "", 1.hour)
+      return nil
+    end
+    url = tmdb_image_url(info["poster_path"], "poster", "large")
+    RCache.set(cache_prefix+"tmdb:main_poster", url, 10.days)
+    RCache.set(cache_prefix+"tmdb:main_poster:noexpire", url, nil)
+    url
+  end
+  
+  def tmdb_info_url(section = nil)
+    section = section ? "/#{section}" : ""
+    TMDB_API_URL+"/movie/"+imdb_id+section+"?api_key="+TMDB_KEY
+  end
+  
+  def tmdb_image_url(path, type = "poster", size_string = "thumb")
+    config = tmdb_configuration
+    base_url = config["images"]["base_url"]
+    size = tmdb_image_size(size_string, type)
+    return base_url+size+path
+  end
+  
+  def tmdb_image_size(size_string = "thumb", type = "poster")
+    config = tmdb_configuration
+    return nil if !config
+    return size_string if size_string == "original"
+    if size_string == "thumb"
+      return config["images"]["#{type}_sizes"][0]
+    elsif size_string == "large"
+      return config["images"]["#{type}_sizes"][-2]
+    elsif size_string == "medium"
+      idx = (config["images"]["#{type}_sizes"].size-1)/2
+      return config["images"]["#{type}_sizes"][idx]
+    end
+    return nil
+  end
+  
+  def tmdb_configuration
+    return nil if !defined?(TMDB_KEY)
+    @@tmdb_config ||= { }
+    return @@tmdb_config if @@tmdb_config["images"]
+    begin
+      open(tmdb_configuration_url) do |file|
+        @@tmdb_config = JSON.parse(file.read)
+      end
+    rescue
+    end
+    @@tmdb_config
+  end
+  
+  def tmdb_configuration_url
+    TMDB_API_URL+"/configuration?api_key="+TMDB_KEY
   end
 end

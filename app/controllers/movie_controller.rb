@@ -32,6 +32,11 @@ class MovieController < ApplicationController
     @technicals = @movie.technicals.group_by { |x| x.key }
   end
 
+  def images
+    @images = @movie.tmdb_images
+    @images.delete("id")
+  end
+  
   def external_links
     if WikipediaFetcher.page(@movie)
       @wikipedia_page = WikipediaFetcher.page(@movie)

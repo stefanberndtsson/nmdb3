@@ -41,5 +41,7 @@ Installation
 ------------
 
 You need to create a config/database.yml file. There is a database.yml.sample provided.
+If you have an API-key for TheMovieDB.org, rename config/initializers/themoviedb_key.rb.sample and
+fill it in there to use images from TMDB.
 
 Redis needs to be installed on the server running the Rails application.
