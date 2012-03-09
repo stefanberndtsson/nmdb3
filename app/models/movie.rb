@@ -21,7 +21,7 @@ end
 class Movie < ActiveRecord::Base
   IMDB_BASE="http://www.imdb.com/"
   IMDB_URL="#{IMDB_BASE}find"
-  TMDB_KEY=Rails.application.config.themoviedb_key if defined?(Rails.application.config.themoviedb_key)
+  TMDB_KEY=Rails.application.config.themoviedb_key if Rails.application.config.respond_to?("themoviedb_key")
   TMDB_API_URL="http://api.themoviedb.org/3"
   
   has_many :movie_akas
@@ -986,7 +986,7 @@ class Movie < ActiveRecord::Base
   end
   
   def has_images?
-    !!tmdb_images
+    tmdb_images && !(tmdb_images["backdrops"].blank? || tmdb_images["posters"].blank?)
   end
   
   def tmdb_images
