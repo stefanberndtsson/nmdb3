@@ -430,7 +430,7 @@ class Person < ActiveRecord::Base
   
   def tmdb_main_profile(user = nil, cache_only = false)
     info = RCache.get(cache_prefix+"tmdb:info")
-    return nil if !user && info && info["adult"]
+    return nil if !user && !info.blank? && JSON.parse(info)["adult"]
     if cache_only
       return nil if !user && info.blank?
       url = RCache.get(cache_prefix+"tmdb:main_profile:noexpire")
