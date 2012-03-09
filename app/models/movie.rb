@@ -894,6 +894,8 @@ class Movie < ActiveRecord::Base
   end
   
   def matches_movie(linked_imdbid, imdb_title, imdb_year, imdb_type, last_category)
+    linked_movie = Movie.find_by_imdb_id(linked_imdbid)
+    return linked_movie.id if linked_movie
     iyear = " (#{imdb_year})"
     extras = imdb_type ? " (#{imdb_type})" : ""
     full_imdb_title = "#{imdb_title}#{iyear}#{extras}"
