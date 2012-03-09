@@ -56,6 +56,11 @@ class PersonController < ApplicationController
     render :partial => 'image'
   end
   
+  def images
+    @images = @person.tmdb_images(view_context.current_user)
+    @images.delete("id")
+  end
+  
   def reset_externals
     rc = RCache.keys("person:#{@person.id}:*")
     rc.each do |rc_key|

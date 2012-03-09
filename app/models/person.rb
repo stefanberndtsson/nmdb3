@@ -340,8 +340,8 @@ class Person < ActiveRecord::Base
   end
   
   def has_images?(user = nil)
-    return false if !(tmdb_images && !(tmdb_images["backdrops"].blank? || tmdb_images["posters"].blank?))
-    info = tmdb_info
+    return false if !(tmdb_images(user) && !(tmdb_images(user)["profiles"].blank?))
+    info = tmdb_info(user)
     return false if !info
     return false if info["adult"] && !user
     return true
@@ -395,7 +395,7 @@ class Person < ActiveRecord::Base
   def tmdb_images(user = nil)
     return nil if !defined?(TMDB_KEY)
     info = RCache.get(cache_prefix+"tmdb:info")
-    return nil if !user && info && info["adult"]
+    return nil if !user && !info.blank? && JSON.parse(info)["adult"]
     images = RCache.get(cache_prefix+"tmdb:images")
     return JSON.parse(images) if !images.blank?
     info = tmdb_find(user)

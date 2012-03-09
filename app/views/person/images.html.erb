@@ -1,0 +1,15 @@
+<%= render :partial => 'head' %>
+<h2>Images</h2>
+<% for image_type in @images.keys.reverse 
+   next if @images[image_type].blank? %>
+  <div>
+  <h3><%= image_type %></h3>
+  <% for image in @images[image_type] %>
+    <span>
+      <%= link_to image_tag(@person.tmdb_image_url(image["file_path"], "medium")),
+                  @person.tmdb_image_url(image["file_path"], "original"),
+		  :target => "_blank" %>
+    </span>
+  <% end %>
+  </div>
+<% end %>

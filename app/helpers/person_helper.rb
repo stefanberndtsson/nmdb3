@@ -10,6 +10,7 @@ module PersonHelper
     list << { :action => :quotes, :linked => person.has_metadata_page?("quotes") }
     list << { :action => :publicity, :linked => person.has_metadata_page?("publicity") }
     list << { :action => :other_works, :linked => person.has_metadata_page?("other_works") }
+    list << { :action => :images, :linked => person.has_images?(current_user) }
     list << { :action => :download, :linked => true }
     list << { :action => :external_links, :linked => true }
     list
