@@ -21,8 +21,8 @@
 <%= stylesheet_link_tag "common" %>
 <% end -%>
 <% content_for :image do -%>
-<% if @movie.tmdb_main_poster %>
-<div id="movie_image"><%= image_tag @movie.tmdb_main_poster %></div>
+<% if @movie.tmdb_main_poster(current_user) %>
+<div id="movie_image"><%= image_tag @movie.tmdb_main_poster(current_user) %></div>
 <div id="movie_image_hidden" style="display: none !important;"
      class="ajax_wikipedia_image_title"
      url="<%= url_for(:action => :image, :id => @movie.id) %>"

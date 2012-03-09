@@ -1006,7 +1006,7 @@ class Movie < ActiveRecord::Base
         return JSON.parse(json)
       end
     rescue
-      RCache.set(cache_prefix+"tmdb:images", "", 10.days)
+      RCache.set(cache_prefix+"tmdb:images", "", 1.hour)
       return nil
     end
   end
@@ -1022,13 +1022,16 @@ class Movie < ActiveRecord::Base
         return JSON.parse(json)
       end
     rescue
-      RCache.set(cache_prefix+"tmdb:info", "", 10.days)
+      RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
       return nil
     end
   end
   
-  def tmdb_main_poster(cache_only = false)
+  def tmdb_main_poster(user = nil, cache_only = false)
+    info = RCache.get(cache_prefix+"tmdb:info")
+    return nil if !user && !info.blank? && JSON.parse(info)["adult"]
     if cache_only
+      return nil if !user && info.blank?
       url = RCache.get(cache_prefix+"tmdb:main_poster:noexpire")
       return url if !url.blank?
       return nil
@@ -1036,7 +1039,7 @@ class Movie < ActiveRecord::Base
     url = RCache.get(cache_prefix+"tmdb:main_poster")
     return url if !url.blank?
     info = tmdb_info
-    if info.blank? || !info["poster_path"]
+    if info.blank? || info["poster_path"].blank? || (!user && info["adult"])
       RCache.set(cache_prefix+"tmdb:main_poster", "", 1.hour)
       return nil
     end
