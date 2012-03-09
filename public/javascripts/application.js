@@ -46,6 +46,31 @@ jQuery(function($) {
 
 jQuery(function($) {
 	$(document).ready(function(event) {
+		var update = $(".ajax_wikipedia_image_title").attr('update');
+		var update_title = $(".ajax_wikipedia_image_title").attr('update_title');
+		if(update) {
+		    $.ajax({
+			    type: "POST",
+				url: $(".ajax_wikipedia_image_title").attr('url'),
+				success: function(data) {
+				if(update_title) {
+				    $.ajax({
+					    type: "POST",
+						url: $(".ajax_wikipedia_image_title").attr('url_title'),
+						success: function(data) {
+						$("."+update_title).html(data);
+						$("title").html("[N] "+data);
+					    }
+					});
+				}
+			    }
+			});
+		}
+	    });
+    });
+
+jQuery(function($) {
+	$(document).ready(function(event) {
 		var update = $("#dym_movie").attr('update');
 		if(update) {
 		    $.ajax({
