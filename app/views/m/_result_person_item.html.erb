@@ -1,7 +1,7 @@
 <li class="store">
 <a class="noeffect" href="<%= url_for(:action => :person, :id => result.id) %>">
-  <% if result.image_url %>
-    <%= image_tag result.image_url, :class => "image" %>
+  <% if result.image_url(current_user, true) %>
+    <%= image_tag result.image_url(current_user, true), :class => "image" %>
   <% end %>
   <span class="name"><%= result.name(true) %></span>
   <span class="starcomment"><%= movie_list(result, 4) %></span>

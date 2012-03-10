@@ -950,9 +950,9 @@ class Movie < ActiveRecord::Base
     end
   end
   
-  def image_url(cache_only = false)
-    if tmdb_main_poster(cache_only)
-      return tmdb_main_poster(cache_only)
+  def image_url(user = nil, cache_only = false)
+    if tmdb_main_poster(user, cache_only)
+      return tmdb_main_poster(user, cache_only)
     end
     return WikipediaFetcher.image(self)
   end
