@@ -399,8 +399,8 @@ class Person < ActiveRecord::Base
     return nil if !user && !info.blank? && JSON.parse(info)["adult"]
     if cache_only
       return nil if !user && info.blank?
-      url = RCache.get(cache_prefix+"tmdb:images")
-      return url if !url.blank?
+      json = RCache.get(cache_prefix+"tmdb:images")
+      return JSON.parse(json) if !json.blank?
       return nil
     end
     images = RCache.get(cache_prefix+"tmdb:images")
