@@ -9,14 +9,18 @@
 <div class="infobox">
 <ul class="pageitem">
   <li class="textbox">
-<% if WikipediaFetcher.image(@person) -%>
+<% if @person.tmdb_main_profile(current_user, true) %>
+<a href="<%= url_for(:action => :image_view, :type => :person, :object_id => @person.id) %>">
+<div id="infoimage" class="infoimage"><%= image_tag @person.tmdb_main_profile(current_user, true) %></div>
+</a>
+<% elsif WikipediaFetcher.image(@person) -%>
 <a href="<%= url_for(:action => :image_view, :type => :person, :object_id => @person.id) %>">
 <div id="infoimage" class="infoimage"><%= image_tag WikipediaFetcher.image(@person), :onerror => "image_loading_error(\"#{escape_javascript(link_to_resetexternal(@person.id, "person", true))}\");" %></div>
 </a>
 <% else -%>
 <a href="<%= url_for(:action => :image_view, :type => :person, :object_id => @person.id) %>">
 <div id="infoimage"
-     class="infoimage ajax_wikipedia_image"
+     class="infoimage ajax_person_image"
      url="<%= url_for(:controller => :person, :action => :image, :id => @person.id) %>"
      update="infoimage"></div>
 </a>

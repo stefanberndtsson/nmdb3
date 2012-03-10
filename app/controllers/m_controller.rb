@@ -175,11 +175,11 @@ class MController < ApplicationController
     @object_id = params[:object_id]
     if @type == "movie"
       @movie = Movie.find(@object_id)
-      @image_url = WikipediaFetcher.image(@movie)
+      @image_url = @movie.image_url(true) # WikipediaFetcher.image(@movie)
       @title = @movie.display
     elsif @type == "person"
       @person = Person.find(@object_id)
-      @image_url = WikipediaFetcher.image(@person)
+      @image_url = @person.image_url(false, true) # WikipediaFetcher.image(@person)
       @title = @person.name(false)
     end
   end

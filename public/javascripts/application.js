@@ -27,7 +27,9 @@ jQuery(function($) {
 		url: $(".ajax_person_image").attr("url"),
 		success: function(data) {
 		    $('#spinner').hide();
-		    $('#'+update_menuitem).html(data.menuitem);
+		    if(update_menuitem) {
+			$('#'+update_menuitem).html(data.menuitem);
+		    }
 		    if(data.selectable) {
 			$('#'+update_menuitem).attr("class", "unselected");
 		    }
@@ -150,6 +152,7 @@ function image_loading_error(reseturl) {
 
 jQuery(function($) {
     var url = $('.autocomplete_search').attr('data-url');
+    if(!url) { return false; }
     $('.autocomplete_search').result(function(event, data, formatted) {
 	var data_value = data[0];
 	if(data_value.substring(0,3) == "<b>") {

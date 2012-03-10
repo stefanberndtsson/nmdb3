@@ -40,7 +40,11 @@
   <li class="textbox" id="titlename"><span class="header center"><%= @movie.display %></span></li>
   <% end %>
   <li class="textbox">
-<% if WikipediaFetcher.image(@movie) -%>
+<% if @movie.tmdb_main_poster(current_user) %>
+<a href="<%= url_for(:action => :image_view, :type => :movie, :object_id => @movie.id) %>">
+<div id="infoimage" class="infoimage"><%= image_tag @movie.tmdb_main_poster(current_user) %></div>
+</a>
+<% elsif WikipediaFetcher.image(@movie) -%>
 <a href="<%= url_for(:action => :image_view, :type => :movie, :object_id => @movie.id) %>">
  <div id="infoimage" class="infoimage"><%= image_tag WikipediaFetcher.image(@movie), :onerror => "image_loading_error(\"#{escape_javascript(link_to_resetexternal(@movie.id, "movie", true))}\");" %></div>
 </a>

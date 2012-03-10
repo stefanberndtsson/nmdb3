@@ -310,7 +310,10 @@ class Person < ActiveRecord::Base
     false
   end
 
-  def image_url
+  def image_url(user = nil, cache_only = false)
+    if tmdb_main_profile(user, cache_only)
+      return tmdb_main_profile(user, cache_only)
+    end
     return RCache.get("person:#{id}:wikipedia:image")
   end
   
