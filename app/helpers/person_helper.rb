@@ -10,7 +10,7 @@ module PersonHelper
     list << { :action => :quotes, :linked => person.has_metadata_page?("quotes") }
     list << { :action => :publicity, :linked => person.has_metadata_page?("publicity") }
     list << { :action => :other_works, :linked => person.has_metadata_page?("other_works") }
-    list << { :action => :images, :linked => person.has_images?(current_user) }
+    list << { :action => :images, :linked => person.has_images?(current_user), :id => "ajax_images_menuitem" }
     list << { :action => :download, :linked => true }
     list << { :action => :external_links, :linked => true }
     list
@@ -21,7 +21,7 @@ module PersonHelper
       person_menulist(@person).map do |menuitem|
         item_class = (menuitem[:action].to_s == params[:action]) ? "selected" : "unselected"
         item_class = "unlinked" if !menuitem[:linked]
-        content_tag :li, :class => item_class do
+        content_tag :li, :class => item_class, :id => menuitem[:id] do
           link_text = I18n.t("menu."+(menuitem[:title] || menuitem[:action].to_s))
           menuitem[:linked] ? link_to_page(link_text, :person, menuitem[:action], @person.id) : link_text
         end

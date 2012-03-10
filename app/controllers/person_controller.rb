@@ -52,8 +52,20 @@ class PersonController < ApplicationController
   end
 
   def image
-    @image_url = WikipediaFetcher.image(@person, true)
-    render :partial => 'image'
+#    @image_url = WikipediaFetcher.image(@person, true)
+#    render :partial => 'image'
+    profile_url = @person.tmdb_main_profile(view_context.current_user)
+    profile_url = WikipediaFetcher.image(@person, true) if !profile_url
+    
+    menuitem = I18n.t("menu.images")
+    if @person.has_images?(view_context.current_user, false)
+      menuitem = view_context.link_to_page(I18n.t("menu.images"), :person, :images, @person.id)
+    end
+    
+    render :json => {
+      :image => view_context.image_tag(profile_url),
+      :menuitem => menuitem
+    }
   end
   
   def images

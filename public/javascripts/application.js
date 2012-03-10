@@ -17,6 +17,26 @@ function toggle_hidden(hidden_id) {
 }
 
 jQuery(function($) {
+    $(document).ready(function(event) {
+	var update = $(".ajax_person_image").attr("update");
+	var update_menuitem = $(".ajax_person_image").attr("update_menuitem");
+	if(update) {
+	    $('#spinner').show();
+	    $.ajax({
+		type: "POST",
+		url: $(".ajax_person_image").attr("url"),
+		success: function(data) {
+		    $('#spinner').hide();
+		    $('#'+update_menuitem).html(data.menuitem);
+		    $('#'+update_menuitem).attr("class", "unselected");
+		    $('#'+update).hide().html(data.image).fadeIn(500);
+		}
+	    });
+	}
+    });
+});
+
+jQuery(function($) {
 	$(document).ready(function(event) {
 		var update = $(".ajax_wikipedia_image").attr('update');
 		var update_title = $(".ajax_wikipedia_image").attr('update_title');

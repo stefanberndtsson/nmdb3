@@ -9,14 +9,15 @@
 <%= stylesheet_link_tag "common" %>
 <% end -%>
 <% content_for :image do -%>
-<% if @person.tmdb_main_profile(current_user) %>
-<div id="person_image"><%= image_tag @person.tmdb_main_profile(current_user) %></div>
+<% if @person.tmdb_main_profile(current_user, true) %>
+<div id="person_image"><%= image_tag @person.tmdb_main_profile(current_user, true) %></div>
 <% elsif WikipediaFetcher.image(@person) -%>
 <div id="person_image"><%= image_tag WikipediaFetcher.image(@person), :onerror => "image_loading_error(\"#{escape_javascript(link_to_resetexternal(@person.id, "person", true))}\");" %></div>
 <% else -%>
 <div id="person_image"
-     class="ajax_wikipedia_image"
+     class="ajax_person_image"
      url="<%= url_for(:action => :image, :id => @person.id) %>"
+     update_menuitem="ajax_images_menuitem"
      update="person_image"></div>
 <% end -%>
 <% end -%>

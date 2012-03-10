@@ -339,9 +339,9 @@ class Person < ActiveRecord::Base
     (occs.count > 0) ? occs.first.episode_count : nil
   end
   
-  def has_images?(user = nil)
-    return false if !(tmdb_images(user) && !(tmdb_images(user)["profiles"].blank?))
-    return false if tmdb_images(user)["profiles"].size <= 1
+  def has_images?(user = nil, cache_only = true)
+    return false if !(tmdb_images(user, cache_only) && !(tmdb_images(user, cache_only)["profiles"].blank?))
+    return false if tmdb_images(user, cache_only)["profiles"].size <= 1
     info = tmdb_info(user)
     return false if !info
     return false if info["adult"] && !user
@@ -393,10 +393,16 @@ class Person < ActiveRecord::Base
     TMDB_API_URL+"/search/person?#{adult}api_key="+TMDB_KEY+"&query="+CGI.escape(name_norm)
   end
   
-  def tmdb_images(user = nil)
+  def tmdb_images(user = nil, cache_only = false)
     return nil if !defined?(TMDB_KEY)
     info = RCache.get(cache_prefix+"tmdb:info")
     return nil if !user && !info.blank? && JSON.parse(info)["adult"]
+    if cache_only
+      return nil if !user && info.blank?
+      url = RCache.get(cache_prefix+"tmdb:images")
+      return url if !url.blank?
+      return nil
+    end
     images = RCache.get(cache_prefix+"tmdb:images")
     return JSON.parse(images) if !images.blank?
     info = tmdb_find(user)
