@@ -65,7 +65,7 @@ class PersonController < ApplicationController
     end
     
     render :json => {
-      :image => view_context.image_tag(profile_url),
+      :image => profile_url ? view_context.image_tag(profile_url) : nil,
       :menuitem => menuitem,
       :selectable => selectable
     }
