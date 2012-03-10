@@ -58,13 +58,16 @@ class PersonController < ApplicationController
     profile_url = WikipediaFetcher.image(@person, true) if !profile_url
     
     menuitem = I18n.t("menu.images")
+    selectable = false
     if @person.has_images?(view_context.current_user, false)
       menuitem = view_context.link_to_page(I18n.t("menu.images"), :person, :images, @person.id)
+      selectable = true
     end
     
     render :json => {
       :image => view_context.image_tag(profile_url),
-      :menuitem => menuitem
+      :menuitem => menuitem,
+      :selectable => selectable
     }
   end
   

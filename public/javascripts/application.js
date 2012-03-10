@@ -28,7 +28,9 @@ jQuery(function($) {
 		success: function(data) {
 		    $('#spinner').hide();
 		    $('#'+update_menuitem).html(data.menuitem);
-		    $('#'+update_menuitem).attr("class", "unselected");
+		    if(data.selectable) {
+			$('#'+update_menuitem).attr("class", "unselected");
+		    }
 		    $('#'+update).hide().html(data.image).fadeIn(500);
 		}
 	    });
