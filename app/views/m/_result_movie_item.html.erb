@@ -1,7 +1,11 @@
 <li class="store">
 <a class="noeffect" href="<%= url_for(:action => :movie, :id => result.id) %>">
+  <% @image_fetch_tries = 3 if !@image_fetch_tries %>
   <% if result.image_url(current_user, true) %>
     <%= image_tag result.image_url(current_user, true), :class => "image" %>
+  <% elsif @image_fetch_tries > 0 && result.image_url(current_user) %>
+    <%= image_tag result.image_url(current_user), :class => "image" %>
+    <% @image_fetch_tries -= 1 %>
   <% end %>
   <% if result.is_episode? %>
   <span class="name"><%= result.imdb_movie_title %></span>
