@@ -6,14 +6,17 @@
   <head>
     <title><%= yield :title %></title>
     <%= stylesheet_link_tag "main", "jquery.autocomplete" %>
-    <%= javascript_include_tag :defaults, "jquery.tablesorter.min.js", (use_autocomplete? ? "jquery.autocomplete.js" : "") %>
+    <%= javascript_include_tag :defaults, "jquery.tablesorter.min.js" %>
+    <% if use_autocomplete? %>
+    <%= javascript_include_tag "jquery.autocomplete.js" %>
+    <% end %>
     <%= yield :stylesheet %>
   </head>
   <body>
     <div id="top">
       <div id="search">
         <%= form_for :query, :url => { :controller => :search, :action => :result }, :html => {:method => :get} do |f| -%>
-        <b>Search: </b><%= text_field_tag :query, params[:query], :size => 30, :class => "autocomplete_search", "data-url" => url_for(:controller => :search, :action => :autocomplete_search) %>
+        <b>Search: </b><%= text_field_tag :query, params[:query], :size => 30, :class => use_autocomplete? ? "autocomplete_search" : "no_autocomplete_search", "data-url" => url_for(:controller => :search, :action => :autocomplete_search) %>
         <%=  select_tag :source, options_for_select([["All",""],
              ["Movies","movies"],["People","people"],["Plots", "plots"],["Quotes","quotes"]], @selected) %>
         <%= submit_tag "Search" %>
