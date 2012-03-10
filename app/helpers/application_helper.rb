@@ -160,4 +160,22 @@ module ApplicationHelper
     
     return weighted.map { |x| "<span class=\"nowrap\">#{x.title}</span>" }.join(", ").html_safe
   end
+  
+  def tmdb_image_info(image, separator = ": ", force_two_parts = false)
+    language = nil
+    size = nil
+    if image["width"] && image["height"]
+      size = "#{image["width"]}x#{image["height"]}"
+    end
+    if image["iso_639_1"]
+      language = ISO_639.find_by_code(image["iso_639_1"])
+      language = language.english_name if language
+    end
+
+    array = ([language, size]-[nil])
+    if array.size < 2 && force_two_parts
+      array += ["&nbsp;"]
+    end
+    array.join(separator)
+  end
 end

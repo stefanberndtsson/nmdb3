@@ -5,11 +5,12 @@
   <div>
   <h3><%= image_type %></h3>
   <% for image in @images[image_type] %>
-    <span>
+    <div style="display: inline-block; padding-bottom: 3px;>
       <%= link_to image_tag(@person.tmdb_image_url(image["file_path"], "medium")),
                   @person.tmdb_image_url(image["file_path"], "original"),
-		  :target => "_blank" %>
-    </span>
+		  :target => "_blank", :title => tmdb_image_info(image) %>
+      <div><%= tmdb_image_info(image, "<br/>", true).html_safe %></div>
+    </div>
   <% end %>
   </div>
 <% end %>

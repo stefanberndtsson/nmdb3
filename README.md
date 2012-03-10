@@ -23,6 +23,7 @@ The following gems are required (in the Gemfile, just run bundle install):
 * levenshtein-ffi
 * unicode_utils
 * will_paginate
+* iso-639
 
 Riddle is a Sphinxsearch client used for the searching part. The search index used is
 setup by the build project. By default the Sphinx server is expected to be located on
