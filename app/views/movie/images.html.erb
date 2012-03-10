@@ -6,9 +6,9 @@
   <h3><%= image_type %></h3>
   <% for image in @images[image_type] %>
     <div style="display: inline-block; padding-bottom: 3px;">
-      <%= link_to image_tag(@movie.tmdb_image_url(image["file_path"], image_type.singularize, "medium")),
+      <%= link_to image_tag(@movie.tmdb_image_url(image["file_path"], image_type.singularize, "medium"), :title => tmdb_image_info(image)),
                   @movie.tmdb_image_url(image["file_path"], image_type.singularize, "original"),
-		  :target => "_blank", :title => tmdb_image_info(image) %>
+		  :target => "_blank" %>
       <div><%= tmdb_image_info(image, "<br/>", true).html_safe %></div>
     </div>
   <% end %>
