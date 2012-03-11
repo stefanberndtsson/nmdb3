@@ -551,4 +551,11 @@ class Person < ActiveRecord::Base
   def tmdb_configuration_url
     TMDB_API_URL+"/configuration?api_key="+TMDB_KEY
   end
+  
+  def image_skip_probe?
+    probestamp = RCache.get(cache_prefix+"image:has_probed")
+    return true if !probestamp.blank?
+    RCache.set(cache_prefix+"image:has_probed", true, 1.day)
+    return false
+  end
 end
