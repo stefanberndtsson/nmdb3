@@ -105,7 +105,7 @@ class WikipediaFetcher
     return nil if !person.stamp_of_birth
     birth_year = person.stamp_of_birth.year
     wclient ||= Wikipedia::Client.new
-    names = [person.last_name + " " + person.first_name, person.name]
+    names = [[person.last_name, person.first_name].compact.join(" "), person.name]
     best_match = 999999999
     best_name = nil
     firstchar_lookup = { }
