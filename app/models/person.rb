@@ -360,40 +360,44 @@ class Person < ActiveRecord::Base
       return info
     end
     result = nil
-    begin
-      open(tmdb_find_url(user)) do |file|
-        json = file.read
-        result = JSON.parse(json)
-      end
-    rescue
-      RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
-      return nil
-    end
-    if result.blank? || result["results"].blank?
-      RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
-      return nil
-    end
-
-    result["results"].each do |res|
-      if tmdb_valid?(res["id"])
-        if !user && res["adult"]
-          RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
-          return nil
+    urls = tmdb_find_url(user)
+    urls.each do |tmdb_url|
+      begin
+        open(tmdb_url) do |file|
+          json = file.read
+          result = JSON.parse(json)
         end
-        info = tmdb_info(res["id"])
-        return info
+      rescue
+        RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
+        return nil
+      end
+      next if result.blank? || result["results"].blank?
+
+      result["results"].each do |res|
+        if tmdb_valid?(res["id"])
+          if !user && res["adult"]
+            RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
+            return nil
+          end
+          info = tmdb_info(res["id"])
+          return info
+        end
       end
     end
     RCache.set(cache_prefix+"tmdb:info", "", 1.hour)
     return nil
   end
   
-  def tmdb_find_url(user = nil)
+  def tmdb_find_url(user = nil, do_akas = true)
     adult = ""
     if user
       adult = "include_adult=true&"
     end
-    TMDB_API_URL+"/search/person?#{adult}api_key="+TMDB_KEY+"&query="+CGI.escape(name_norm)
+    names = [name_norm]
+    names += aka_names.map(&:name_norm) if do_akas
+    names.map do |tmp_name|
+      TMDB_API_URL+"/search/person?#{adult}api_key="+TMDB_KEY+"&query="+CGI.escape(tmp_name)
+    end
   end
   
   def tmdb_images(user = nil, cache_only = false)
