@@ -105,7 +105,7 @@ class MController < ApplicationController
   
   def movie
     @movie = Movie.find(params[:id])
-    @valid = @movie.valid_mobile_pages
+    @valid = @movie.valid_mobile_pages(view_context.current_user)
     @page = params[:page]
     @page = "cast" if !@valid.transpose[0].include?(@page)
     
@@ -136,11 +136,16 @@ class MController < ApplicationController
       strong_keywords = @movie.strong_keywords
       @keywords = (strong_keywords + (keywords - strong_keywords)).sort_by { |x| x.display }
     end
+    
+    if @page == "images"
+      @images = @movie.tmdb_images
+      @images.delete("id")
+    end
   end
   
   def person
     @person = Person.find(params[:id])
-    @valid = @person.valid_mobile_pages
+    @valid = @person.valid_mobile_pages(view_context.current_user)
     @page = params[:page]
     @page = "movies_by_weight" if !@valid.transpose[0].include?(@page)
     @page_to_render = @page
@@ -167,6 +172,11 @@ class MController < ApplicationController
       @movie_list = @person.movies_as_section("producer") if @page == "movies_producer"
       @movie_list = @person.movies_as_section("writer") if @page == "movies_writer"
       @page_to_render = "movies_chrono"
+    end
+
+    if @page == "images"
+      @images = @person.tmdb_images
+      @images.delete("id")
     end
   end
   

@@ -317,7 +317,7 @@ class Person < ActiveRecord::Base
     return RCache.get("person:#{id}:wikipedia:image")
   end
   
-  def valid_mobile_pages
+  def valid_mobile_pages(user = nil)
     pages = [["movies_by_weight", "Movies Weighted"]]
     pages << ["movies_primary_cast", "Movies Chronologically"] if !movies_as_primary_cast.blank?
     pages << ["movies_self", "Movies as Theirself"] if !movies_as_self.blank?
@@ -331,6 +331,7 @@ class Person < ActiveRecord::Base
     pages << ["quotes", "Quotes"] if has_metadata_page?("quotes")
     pages << ["publicity", "Publicity"] if has_metadata_page?("publicity")
     pages << ["other_works", "Other Works"] if has_metadata_page?("other_works")
+    pages << ["images", "Images"] if has_images?(user)
     pages
   end
   

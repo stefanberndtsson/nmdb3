@@ -957,7 +957,7 @@ class Movie < ActiveRecord::Base
     return WikipediaFetcher.image(self)
   end
   
-  def valid_mobile_pages
+  def valid_mobile_pages(user = nil)
     pages = [["cast", "Cast"]]
     pages << ["episodes", "Episodes"] if !episodes.blank?
     pages << ["additional_details", "Additional Details"] if has_additional?
@@ -969,7 +969,7 @@ class Movie < ActiveRecord::Base
     pages << ["soundtrack", "Soundtrack"] if !soundtrack_titles.blank?
     pages << ["quotes", "Quotes"] if !quotes.blank?
     pages << ["similar", "Similar Movies"] if has_similar?
-#    pages << ["images", "Images"] if has_images?
+    pages << ["images", "Images"] if has_images?(user)
     pages
   end
   
