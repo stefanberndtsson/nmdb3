@@ -27,11 +27,12 @@
     </div>
     <div id="bottom">
       <h1><%= yield :page_head %></h1>
-      <% if menu -%>
+      <% @menu = menu -%>
+      <% if @menu -%>
       <div class="menu">
       <div id="menu_col">
         <h2>Sections</h2>
-        <%= menu %>
+        <%= @menu %>
       </div>
       <div id="spinner" style="display: none;"><%= image_tag "ajax-loader.gif" %></div>
       <%= yield :image %>
