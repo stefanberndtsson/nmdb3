@@ -195,9 +195,13 @@ class User < ActiveRecord::Base
     show_setting("show_autocomplete")
   end
   
+  def buttons
+    ["seen", "owns", "wish", "error", "unwish"]
+  end
+  
   def button_count
     count = 0
-    ["seen", "owns", "wish", "error", "unwish"].each { |x| count += 1 if show_setting("show_"+x) }
+    buttons.each { |x| count += 1 if show_setting("show_"+x) }
     count
   end
   

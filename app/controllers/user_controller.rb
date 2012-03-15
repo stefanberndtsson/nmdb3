@@ -161,6 +161,9 @@ class UserController < ApplicationController
     @all_data = @user.user_movie_data.where(:value => true).group_by do |x|
       x.key
     end
+    @user.buttons.each do |button|
+      @all_data[button] = [] if !@all_data.keys.include?(button)
+    end
     @all_data.keys.each do |key|
       @all_data[key] = Hash[*@all_data[key].map{ |x| [x.movie_id, x.value == "t"] }.flatten]
     end
