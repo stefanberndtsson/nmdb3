@@ -30,8 +30,8 @@ class UserController < ApplicationController
       redirect_to :action => 'login', :bounceback => bounceback, :fr => forced_redirect_from
     else
       if !(user.has_session?(cookies['session_id']) && cookies['user_id'] == user.id)
-        cookies['session_id'] = user.generate_session
-        cookies['user_id'] = user.id
+        cookies['session_id'] = { :value => user.generate_session, :expires => 20.years.from_now.utc }
+        cookies['user_id'] = { :value => user.id, :expires => 20.years.from_now.utc }
       end
       if forced_redirect_from.blank?
         redirect_to bounceback

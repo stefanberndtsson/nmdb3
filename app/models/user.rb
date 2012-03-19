@@ -39,7 +39,7 @@ class User < ActiveRecord::Base
   
   def generate_session
     session = Digest::MD5.hexdigest((rand(Time.now.to_f)+Time.now.to_f).to_s)
-    RCache.set("user_session:#{self.id}:#{session}", true, 2.days)
+    RCache.set("user_session:#{self.id}:#{session}", true, 30.days)
     session
   end
   
@@ -48,7 +48,7 @@ class User < ActiveRecord::Base
   end
   
   def refresh_session(session)
-    RCache.expire("user_session:#{self.id}:#{session}", 2.days)
+    RCache.expire("user_session:#{self.id}:#{session}", 30.days)
   end
   
   def load_movie_statuses
