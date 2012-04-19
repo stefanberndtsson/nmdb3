@@ -18,6 +18,12 @@ module Levenshtein
   end
 end
 
+class String
+  def trim
+    self.gsub(/^\s*/,"").gsub(/\s*$/,"")
+  end
+end
+
 class Movie < ActiveRecord::Base
   IMDB_BASE="http://www.imdb.com/"
   IMDB_URL="#{IMDB_BASE}find"
@@ -184,8 +190,10 @@ class Movie < ActiveRecord::Base
     display == full_title || Levenshtein.distance(reduce_title(display), title) <= allow_diff
   end
 
-  def reduce_title(in_title)
-    in_title.gsub(/ \((TV|V|VG)\)$/,"").gsub(/ \([0-9?]{4}(|\/[IVX]+)\)( \{|$)/,"")
+  def reduce_title(in_title, keep_year = false)
+    in_title = in_title.gsub(/ \((TV|V|VG)\)$/,"")
+    in_title = in_title.gsub(/ \([0-9?]{4}(|\/[IVX]+)\)( \{|$)/,"") if !keep_year
+    in_title
   end
   
   def episode_display(skip_nums = false)
@@ -731,9 +739,10 @@ class Movie < ActiveRecord::Base
     tmp_imdbid
   end
   
-  def imdb_data(page = "movieconnections")
+  def imdb_data(page = "trivia?tab=mc")
     cached = RCache.get("movie:#{self.id}:imdb:page_#{page}")
-    return cached if cached
+    grouped_data = YAML.load(cached) if cached
+    return grouped_data if grouped_data
     return nil if !imdbid
     begin
       headers = {
@@ -742,186 +751,96 @@ class Movie < ActiveRecord::Base
       io = open(IMDB_BASE+"title/#{imdbid}/"+page, headers)
       page_data = io.read
       doc = Nokogiri::HTML(page_data)
-      content = doc.search("#tn15content")
-      return nil if content.blank?
-      content = content.to_s.gsub(/.*?(<h5>.*)<hr>.*/m,'\1').gsub(/\n?<br>/m,"\n<br>\n").gsub(/^<br>\n/,"")
-      content = Iconv.conv("utf-8", "iso-8859-1", content)
-      RCache.set("movie:#{self.id}:imdb:page_#{page}", content, 90.days)
+      content = doc.search("#trivia_content .list")
+      groups = content.search("a[@name]")
+      grouped_data = { }
+      groups.each do |group|
+        group_name = group.attr("name").gsub(/_/," ")
+        grouped_data[group_name] = []
+        current_sibling = group.next_sibling
+        while(!((current_sibling.node_name == "a") && current_sibling.attr("name")))
+          if(current_sibling.node_name == "div" &&
+              current_sibling.attr("class")[/^soda (odd|even)/])
+            item_link = current_sibling.search("a[@href]")
+            item_imdbid = item_link.first.attr("href").gsub(/\/title\/(.*)\//, '\1')
+            item_text = ""
+            if current_sibling.search("br").first
+              item_text = current_sibling.search("br").first.next_sibling.text
+            end
+            item_title = item_link.text + " " + item_link.first.next_sibling.text.gsub(/\u00a0/,"").trim
+            grouped_data[group_name] << {
+              :title => item_title.to_s,
+              :imdbid => item_imdbid.to_s,
+              :text => item_text.to_s.trim
+            }
+          end
+          current_sibling = current_sibling.next_sibling
+          break if !current_sibling
+        end
+      end
+
+      return nil if grouped_data.keys.blank?
+      RCache.set("movie:#{self.id}:imdb:page_#{page}", grouped_data.to_yaml, 90.days)
     rescue
       return nil
     end
-    content
+    grouped_data
   end
 
-  def debug_mc_unmatched
-    @debug_mc_unmatched ||= []
-  end
-
-  def debug_mc_unmatched=(value)
-    @debug_mc_unmatched ||= []
-    @debug_mc_unmatched << value
-  end
-  
-  def debug_mc_unmatched_undo(value)
-    @debug_mc_unmatched ||= []
-    @debug_mc_unmatched = @debug_mc_unmatched.select { |x| x[0] != value }
-  end
-  
-  def debug_mc_unfound
-    @debug_mc_unfound ||= []
-  end
-  
-  def debug_mc_unfound=(value)
-    @debug_mc_unfound ||= []
-    @debug_mc_unfound << value
-  end
-  
   def scan_movie_connections
-    @debug_mc_unmatched ||= []
-    @debug_mc_unfound ||= []
     idata = imdb_data
     return nil if !idata
-    
-    @mcs = { }
-    movie_connections.each do |mc|
-      @mcs[[mc.linked_movie.imdb_movie_title, mc.type.capitalize]] = mc.linked_movie_id
-      @mcs[[mc.linked_movie.imdb_movie_title(false), mc.type.capitalize]] = mc.linked_movie_id
-      @mcs[[mc.linked_movie.imdb_movie_title(true, true), mc.type.capitalize]] = mc.linked_movie_id
-      @mcs[[mc.linked_movie.imdb_movie_title(false, true), mc.type.capitalize]] = mc.linked_movie_id
-    end
 
-    unfound = movie_connections.map { |x| [x.linked_movie_id, x.type.capitalize] }
-    done = false
-    second_run = false
-    final_run = false
-    
-    while !done
-      last_category = nil
-      got_connection = nil
-      last_unmatched = nil
-      idata.split("\n").each do |line|
-        if line[/^<h5>([^<]+)<\/h5>$/]
-          last_category = $1
-          got_connection = nil
-          last_unmatched = nil
-          next
-        end
+    all_known = Movie.find_all_by_imdb_id(idata.values.flatten.map { |x| x[:imdbid] }).group_by { |x| x.imdb_id }
 
-        if last_category && line[/<a href=\"\/title\/(tt\d+)\/\">([^<]+)<\/a>(| \((\d{4}[\/IVX]*)\)| \((\d{4}[\/IVX]*)\) \((V|TV|VG)\))$/]
-          got_connection = nil
-          linked_imdbid = $1
-          imdb_title = CGI.unescapeHTML($2)
-          imdb_type = nil
-          imdb_year = nil
-          if $6
-            imdb_year = $5
-            imdb_type = $6
-          else
-            imdb_year = $4
+    idata.keys.each do |mc_type|
+      unmatched_nlinks = []
+      unmatched_ilinks = []
+      type = MovieConnectionType.find_by_connection_type(mc_type)
+      STDERR.puts("DEBUG: Did not find: #{mc_type}") if !type
+      next if !type
+      ilinked = idata[mc_type]
+      nlinked = movie_connections.where(:movie_connection_type_id => type).map(&:linked_movie)
+      nlinked.each do |nlink|
+        matched = ilinked.select { |x| x[:imdbid] == nlink.imdb_id }
+        matched = ilinked.select { |x| x[:title] == nlink.imdb_movie_title(true, false, false) } if matched.blank?
+        matched = ilinked.select { |x| x[:title] == nlink.imdb_movie_title(false, false, false) } if matched.blank?
+        matched = ilinked.select { |x| x[:title] == nlink.imdb_movie_title(true, true, false) } if matched.blank?
+        matched = ilinked.select { |x| x[:title] == nlink.imdb_movie_title(false, true, false) } if matched.blank?
+        matched = ilinked.select { |x| x[:title] == nlink.imdb_movie_title(true, false, true) } if matched.blank?
+        matched = ilinked.select { |x| x[:title] == nlink.imdb_movie_title(false, false, true) } if matched.blank?
+        matched = ilinked.select { |x| x[:title] == nlink.imdb_movie_title(true, true, true) } if matched.blank?
+        matched = ilinked.select { |x| x[:title] == nlink.imdb_movie_title(false, true, true) } if matched.blank?
+        if !matched.blank?
+          text = "[NONE]"
+          if !matched.first[:text].blank?
+            text = matched.first[:text]
           end
-          got_connection = matches_movie(linked_imdbid, imdb_title, imdb_year, imdb_type, last_category)
-          if got_connection
-            unfound.delete([got_connection, last_category])
-            RCache.set("movie:#{self.id}:imdb:link_info_#{got_connection}:#{last_category}", "[NONE]", 30.days)
-            if second_run || final_run
-              matching = [linked_imdbid, imdb_title, imdb_year, imdb_type, last_category]
-              self.debug_mc_unmatched_undo(matching)
-            end
-            last_unmatched = nil
-          else
-            last_unmatched = [linked_imdbid, imdb_title, imdb_year, imdb_type, last_category]
-          end
-        end
-
-        if got_connection && line[/^\u00a0-\u00a0 (.*)$/]
-          RCache.set("movie:#{self.id}:imdb:link_info_#{got_connection}:#{last_category}", $1, 30.days)
-          got_connection = nil
-        end
-        
-        if last_unmatched && line[/^\u00a0-\u00a0 (.*)$/]
-          self.debug_mc_unmatched=[last_unmatched, $1] if !second_run && !final_run
-          last_unmatched = nil
-        end
-      end
-
-      if final_run
-        done = true
-      end
-
-      if !second_run
-        @mcs = { }
-      end
-      
-      unfound.each do |linked|
-        if second_run || final_run
-          self.debug_mc_unfound=linked
+          RCache.set("movie:#{self.id}:imdb:link_info_#{nlink.id}:#{mc_type.capitalize}", text, 30.days)
         else
-          linked_movie = Movie.find(linked[0])
-          linked_type = movie_connections.where(:linked_movie_id => linked[0]).first.type
-          akas = linked_movie.is_episode ? linked_movie.main.movie_akas : linked_movie.movie_akas
-          akas.each do |maka|
-            @mcs[[linked_movie.imdb_movie_title(true, false, maka.title), linked_type.capitalize]] = linked[0]
-            @mcs[[linked_movie.imdb_movie_title(false, false, maka.title), linked_type.capitalize]] = linked[0]
-          end
+          RCache.set("movie:#{self.id}:imdb:link_info_#{nlink.id}:#{mc_type.capitalize}", "[NONE]", 30.days)
         end
-        RCache.set("movie:#{self.id}:imdb:link_info_#{linked[0]}:#{linked[1]}", "[NONE]", 30.days)
-      end
-      
-      if unfound.blank?
-        done = true
-        next
-      end
-      if !second_run && !final_run
-        second_run = true
-        next
-      end
-    
-      if final_run
-        done = true
-        next
-      end
-      
-      if second_run
-        second_run = false
-        final_run = true
-      end
-
-      unfound.each do |linked|
-        Movie.find(linked[0]).imdbid
       end
     end
     nil
   end
-  
-  def matches_movie(linked_imdbid, imdb_title, imdb_year, imdb_type, last_category)
-    linked_movie = Movie.find_by_imdb_id(linked_imdbid)
-    return linked_movie.id if linked_movie
-    iyear = " (#{imdb_year})"
-    extras = imdb_type ? " (#{imdb_type})" : ""
-    full_imdb_title = "#{imdb_title}#{iyear}#{extras}"
-    if @mcs[[full_imdb_title, last_category]]
-      linked_id = @mcs[[full_imdb_title, last_category]]
-      linked_movie_imdbid = Movie.find(linked_id).imdbid
-#      linked_movie.update_attribute(:imdb_id, linked_imdbid) if !linked_movie.imdb_id
-      return linked_id
-    end
-    if @mcs[[imdb_title, last_category]]
-      return @mcs[[imdb_title, last_category]]
-    end
-    return nil
-  end
-  
-  def imdb_movie_title(include_year_and_extras = true, use_display_title = false, force_title = nil)
+
+  def imdb_movie_title(include_year_and_extras = true, use_display_title = false, skip_episode_values = false, force_title = nil)
     used_title = title if !use_display_title
-    used_title = reduce_title(display(true)) if use_display_title
-    used_title = reduce_title(force_title) if force_title
+    used_title = reduce_title(display(true), true) if use_display_title
+    used_title = reduce_title(force_title, true) if force_title
+    used_title = used_title.gsub(/"/,"")
     if is_episode
       ititle = used_title.gsub(/^\"(.*)\"$/, '\1')
       iepisode_data = ""
       if episode_name.blank? && episode_season && episode_episode
         iepisode_data = "Episode ##{episode_season}.#{episode_episode}"
       elsif !episode_name.blank? && episode_season && episode_episode
-        iepisode_data = "#{episode_name} (##{episode_season}.#{episode_episode})"
+        if skip_episode_values
+          iepisode_data = "#{episode_name}"
+        else
+          iepisode_data = "#{episode_name} (##{episode_season}.#{episode_episode})"
+        end
       elsif !episode_name.blank? && !(episode_season && episode_episode)
         if episode_name[/\((\d\d\d\d-\d\d-\d\d\))/]
           stamp = Time.parse($1)
@@ -932,7 +851,7 @@ class Movie < ActiveRecord::Base
       end
       iyear = first_release_date ? first_release_date.release_stamp.year : full_year
       iyeardata = include_year_and_extras ? " (#{iyear})" : ""
-      return "\"#{ititle}: #{iepisode_data}\"#{iyeardata}"
+      return "#{ititle}: #{iepisode_data}#{iyeardata}"
     else
       extras = ""
       if ["V", "VG", "TV"].include?(title_category)

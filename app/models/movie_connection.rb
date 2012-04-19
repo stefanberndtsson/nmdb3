@@ -12,7 +12,7 @@ class MovieConnection < ActiveRecord::Base
   def imdb_extra_info(exit_if_miss = false)
     cached = RCache.get("movie:#{movie_id}:imdb:link_info_#{linked_movie_id}:#{type.capitalize}")
     return nil if cached && cached == "[NONE]"
-    return cached.gsub(/<a href="[^"]+">([^<]+)<\/a>/, '\1') if cached
+    return cached if cached
     return nil if exit_if_miss
     movie.scan_movie_connections
     imdb_extra_info(true)
